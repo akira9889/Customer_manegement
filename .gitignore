@@ -1,0 +1,5 @@
+.devcontainer
+.vscode
+docker/db/mysql_data
+.DS_Store
+src/public

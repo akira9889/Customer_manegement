@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    volumes:
+      - ./src/public:/var/www/html/public
+      - ./src/html:/var/www/html/html
+      - ./sass/:/var/www/html/sass
+      - ./src/js:/var/www/html/js
+      - ./src/php:/var/www/html/php
+      - ./gulpfile.js:/var/www/html/gulpfile.js
+    ports:
+      - "40080:80"
+      - "3000:3000"
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "43306:3306"
+    volumes:
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/db/mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: pass
+      TZ: "Asia/Tokyo"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS='db'
+    ports:
+      - "4000:80"
+    volumes:
+      - ./docker/phpmyadmin/sessions:/sessions
+      - ./docker/phpmyadmin/phpmyadmin-misc.ini:/usr/local/etc/php/conf.d/phpmyadmin-misc.ini
