@@ -1,0 +1,259 @@
+.customer_detail {
+  .main-inner {
+    margin-top: 30px;
+  }
+}
+
+.customer-name {
+  font-weight: bold;
+  margin-top: 66px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+
+  ruby {
+    display: inline-block;
+  }
+
+  rb {
+    font-size: 42px;
+    margin-top: 16px;
+  }
+
+  rt {
+    font-size: 18px;
+  }
+}
+
+.customer-first-name {
+  margin-left: 20px;
+}
+
+.customer-main-detail {
+  p {
+    margin-top: 48px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 22px;
+  }
+
+  span + span {
+    margin-left: 20px;
+  }
+}
+
+.customer-sub-detail {
+  font-size: 22px;
+  padding: 24px 0;
+  border-bottom: 1px solid $border-color;
+
+  &:nth-of-type(2) {
+    margin-top: 16px;
+  }
+
+  &:nth-last-of-type(-n+2) {
+    border-bottom: none;
+
+    dt {
+      font-size: 36px;
+    }
+
+    dd {
+      text-align: left;
+    }
+  }
+
+  dl {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  dd {
+    margin-top: 24px;
+  }
+}
+
+
+.edit-btn {
+  width: 200px;
+  margin: 64px auto 0;
+  position: relative;
+
+  &::before {
+    display: block;
+    font-family: "Font Awesome 6 Free";
+    content: '\f303';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    right: 34px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #fff;
+    font-size: 24px;
+  }
+
+  button {
+    border-radius: 5px;
+    width: 100%;
+    border: none;
+    background-color: $cr-m;
+    height: 50px;
+    color: #fff;
+    font-weight: bold;
+    text-align: left;
+    padding: 5px 0 5px 56px;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background-color .3s;
+
+    &:hover {
+      background-color: darken($cr-m, 10%);
+    }
+  }
+}
+
+.customer-detail-table {
+  thead {
+    th {
+      &:nth-child(-n+2) {
+        width: 20%;
+      }
+      &:last-child {
+        width: 50px;
+      }
+    }
+  }
+
+  td {
+    &:nth-child(3) {
+      text-align: left;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+
+  button {
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+  }
+}
+
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: rgba(0, 0, 0, .7);
+  padding: 36px 110px;
+  overflow: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: .3s;
+  z-index: 20;
+}
+
+/*モーダル本体の擬似要素の指定*/
+.modal-container:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
+/*モーダル本体に「active」クラス付与した時のスタイル*/
+.modal-container.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/*モーダル枠の指定*/
+.modal-body {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  width: 720px;
+}
+
+/*モーダルを閉じるボタンの指定*/
+.modal-close {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: -40px;
+  right: -40px;
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/*モーダル内のコンテンツの指定*/
+.modal-content {
+  background: #fff;
+  text-align: center;
+  padding: 36px 110px;
+}
+
+.modal-date {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.modal-price  {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 64px;
+
+  label {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+  input {
+    margin-left: 20px;
+    margin-right: 16px;
+    border: 1px solid $border-color;
+    height: 40px;
+  }
+}
+
+.modal-memo {
+  margin-top: 46px;
+
+  label {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  textarea {
+    margin-top: 30px;
+    border: 1px solid $border-color;
+    width: 100%;
+    vertical-align: middle;
+    resize: vertical;
+  }
+}
+
+.modal-btn {
+  margin-top: 32px;
+
+  button {
+    border: none;
+    background-color: $cr-m;
+    color: #fff;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 25px;
+    text-align: center;
+    padding: 4px 47px;
+  }
+}

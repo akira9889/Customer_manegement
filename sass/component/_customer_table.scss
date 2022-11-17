@@ -1,0 +1,87 @@
+.table-wrap {
+  margin-top: 70px;
+}
+
+.customer-table {
+  width: 100%;
+  border-collapse: collapse;
+  // border: 1px solid $border-color;
+  text-align: center;
+  background-color: #fff;
+  font-size: 20px;
+
+  tr {
+    position: relative;
+  }
+
+  thead th {
+    font-weight: bold;
+    padding: 11px 0;
+
+    &:not(:last-child) {
+      border-right: 1px solid $border-color;
+    }
+  }
+
+  tbody {
+    th, td {
+      font-weight: normal;
+    }
+  }
+
+  tbody {
+    td {
+      //最後のtdのから要素を除いている
+      &:not(:last-child) {
+        padding: 11px 0 11px 10px;
+        border-top: 1px solid $border-color;
+        border-left: 1px solid $border-color;
+      }
+    }
+  }
+
+  tbody {
+    th {
+      border-top: 1px solid $border-color;
+    }
+  }
+
+  thead {
+    background-color: $cr-m;
+    color: #fff, ;
+  }
+}
+
+.memo {
+  text-align: left;
+}
+
+.row-link {
+  width: 0;
+  height: 0;
+
+  a {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent;
+    transition: background-color .3s;
+
+    &:hover {
+      background-color: rgba($cr-m, .1);
+    }
+  }
+}
+
+.customer-detail-table {
+  tbody {
+      td {
+        &:last-child {
+          border-top: 1px solid $border-color;
+          border-left: 1px solid $border-color;
+        }
+      }
+    }
+}

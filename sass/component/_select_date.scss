@@ -1,0 +1,26 @@
+.select_date {
+  appearance: none;
+  border: none;
+  height: 50px;
+  border-radius: 25px;
+  width: 210px;
+  font-size: 20px;
+  padding-left: 22px;
+}
+
+.select-container {
+    position: relative;
+    color: #000;
+
+    &::before {
+      display: block;
+      font-family: "Font Awesome 6 Free";
+      content: '\f078';
+      font-weight: 900;
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+}

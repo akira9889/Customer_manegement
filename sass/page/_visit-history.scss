@@ -1,0 +1,10 @@
+.visit-history-table {
+  
+  thead {
+    th {
+      &:not(:last-child) {
+        width: 25%;
+      }
+    }
+  }
+}

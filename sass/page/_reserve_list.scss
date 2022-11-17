@@ -1,0 +1,7 @@
+.reserve-list-table {
+  thead {
+    th:not(:last-child) {
+      width: 25%;
+    }
+  }
+}

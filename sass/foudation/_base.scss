@@ -1,0 +1,425 @@
+@use "sass:math";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $ff-base;
+  font-size: $fz-base;
+  font-weight: $fw-base;
+  color: $cr-txt;
+  line-height: $lh-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: $cr-bg;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+article,
+aside,
+footer,
+header,
+nav,
+section,
+main {
+  display: block;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a,
+p,
+span,
+em,
+small,
+strong,
+sub,
+sup,
+mark,
+del,
+ins,
+strike,
+abbr,
+dfn,
+blockquote,
+q,
+cite,
+code,
+pre,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+div,
+section,
+article,
+main,
+aside,
+nav,
+header,
+hgroup,
+footer,
+img,
+figure,
+figcaption,
+address,
+time,
+audio,
+video,
+canvas,
+iframe,
+details,
+summary,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+a {
+  color: inherit;
+  outline: none;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+  background: transparent;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  border: none;
+  vertical-align: top;
+}
+
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: $ff-code;
+  font-size: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  // table-layout: fixed;
+  border: 1px solid $cr-table;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote::after,
+blockquote::before,
+q::after,
+q::before {
+  content: "";
+  content: none;
+}
+
+address {
+  font-style: normal;
+}
+
+ruby,
+ruby rb,
+ruby rt {
+  text-align: center;
+}
+
+ruby {
+  display: inline-table;
+  vertical-align: bottom;
+}
+
+ruby rb {
+  display: table-row-group;
+}
+
+ruby rt {
+  display: table-header-group;
+}
+
+form {
+  margin: 0;
+  padding: 0;
+
+  button {
+    width: auto;
+    display: inline-block;
+    padding: 0.6em 2em;
+    margin: 0;
+    background-image: none;
+    background-color: $cr-m;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 0;
+    font-size: 1.6rem;
+    cursor: pointer;
+    -webkit-appearance: none;
+    transition: all 0.3s ease 0s;
+
+    &:hover,
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      opacity: $opacity;
+    }
+
+    ::-moz-focus-inner {
+      padding: 0;
+      border: none;
+    }
+  }
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid $cr-form-bd;
+  border-radius: 0;
+  background-image: none;
+  font-family: inherit;
+  font-size: 1.6rem;
+  -webkit-appearance: none;
+}
+
+textarea {
+
+  &:hover,
+  &:focus {
+    outline: none;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $cr-form-bd_avtive;
+    box-shadow: none;
+  }
+
+  ::-moz-focus-inner {
+    padding: 0;
+    border: none;
+  }
+}
+
+input {
+
+  &:focus {
+    outline: none;
+    border-color: $cr-form-bd_avtive;
+    box-shadow: none;
+  }
+
+  &[type="submit"],
+  &[type="button"] {
+    width: auto;
+    display: inline-block;
+    padding: 0.6em 2em;
+    margin: 0;
+    background-image: none;
+    background-color: $cr-m;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.6rem;
+    cursor: pointer;
+    -webkit-appearance: none;
+    transition: all 0.3s ease 0s;
+
+    &:hover,
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      opacity: $opacity;
+    }
+
+    ::-moz-focus-inner {
+      padding: 0;
+      border: none;
+    }
+  }
+
+  // &[type="radio"] {
+  //   display: none;
+
+  //   +span {
+  //     display: inline-block;
+  //     position: relative;
+  //     padding: 0 0 0 $size-radio-pd_left;
+  //     margin: 0 16px 0 0;
+  //     cursor: pointer;
+
+  //     &::before {
+  //       position: absolute;
+  //       content: "";
+  //       top: 50%;
+  //       left: 0;
+  //       transform: translateY(-50%);
+  //       background: #fff;
+  //       border: 1px solid $cr-form-bd;
+  //       border-radius: 50%;
+  //       width: $size-radio;
+  //       height: $size-radio;
+  //       display: block;
+  //     }
+
+  //     &::after {
+  //       opacity: 0;
+  //       transition: opacity 0.3s ease 0s;
+  //     }
+  //   }
+
+  //   &:checked+span {
+
+  //     &::after {
+  //       position: absolute;
+  //       content: "";
+  //       top: 50%;
+  //       left: math.div(($size-radio - $size-radio_active), 2);
+  //       transform: translateY(-50%);
+  //       background: $cr-check;
+  //       border-radius: 50%;
+  //       width: $size-radio_active;
+  //       height: $size-radio_active;
+  //       display: block;
+  //       opacity: 1;
+  //     }
+  //   }
+  // }
+
+  &[type="checkbox"] {
+    display: none;
+
+    +span {
+      display: inline-block;
+      position: relative;
+      padding: 0 0 0 $size-checkbox-pd_left;
+      margin: 0 16px 0 0;
+      cursor: pointer;
+      transition: all 1s ease 0s;
+
+      &::before {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        background: #fff;
+        border: 1px solid $cr-form-bd;
+        border-radius: 2px;
+        width: $size-checkbox;
+        height: $size-checkbox;
+        display: block;
+      }
+
+      &::after {
+        opacity: 0;
+        transition: opacity 0.3s ease 0s;
+      }
+    }
+
+    &:checked+span {
+
+      &::after {
+        position: absolute;
+        content: "";
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%) rotate(-45deg);
+        width: $size-checkbox;
+        height: ($size-checkbox * 0.6);
+        margin-top: -0.2em;
+        display: block;
+        border-left: 4px solid $cr-check_active;
+        border-bottom: 4px solid $cr-check_active;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+select {
+  padding: 0.4em 2.4em 0.4em 0.8em;
+  border-radius: 0;
+  background-image: url(../img/arrow.svg);
+  background-position: right 6px center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  font-family: inherit;
+  font-size: 1.6rem;
+  color: inherit;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  border: 1px solid $cr-form-bd;
+
+  &::-ms-expand {
+    display: none;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: $cr-form-bd_avtive;
+  }
+}

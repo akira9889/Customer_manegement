@@ -1,0 +1,17 @@
+.content {
+  @include mq("pc") {
+    margin-top: 85px;
+    margin-left: 330px;
+    margin-right: 30px;
+    padding-top: 30px;
+  }
+
+  @include mq("tab") {
+    padding: 0 15px;
+    margin-top: 125px;
+  }
+}
+
+.main-content {
+  padding-bottom: 120px;
+}

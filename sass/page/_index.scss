@@ -1,0 +1,81 @@
+.main-head {
+  @include mq("pc") {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.search-container {
+  position: relative;
+  color: $gray;
+
+  &::after {
+      display: block;
+      font-family: "Font Awesome 6 Free";
+      content: '\f002';
+      font-weight: 900;
+      font-size: 22px;
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+    }
+}
+
+.search {
+  width: 420px;
+  height: 50px;
+  border-radius: 25px;
+  border: 1px solid $gray;
+  font-size: 20px;
+  padding-left: 65px;
+
+  @include mq("tab") {
+    width: 300px
+  }
+
+  &::placeholder {
+    color: $gray;
+  }
+}
+
+.register-customer-btn {
+  position: relative;
+  width: 280px;
+
+  @include mq("tab") {
+    margin-top: 30px;
+  }
+
+  button {
+    border: none;
+    background-color: $cr-m;
+    height: 50px;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 25px;
+    text-align: left;
+    width: 100%;
+    padding: 5px 20px;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background-color .3s;
+
+    &:hover {
+      background-color: darken($cr-m, 10%);
+    }
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 20px;
+  }
+}
+
+.pagenation-inner {
+  display: flex;
+  justify-content: center;
+  margin-top: 64px;
+}

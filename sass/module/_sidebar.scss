@@ -1,0 +1,71 @@
+.sidebar {
+  position: fixed;
+  border-right: 1px solid $border-color;
+  background-color: #fff;
+  max-width: 100%;
+
+  @include mq("pc") {
+    width: 300px;
+    height: 100vh;
+    top: 85px;
+    left: 0;
+  }
+
+  @include mq("tab") {
+    width: 100%;
+    bottom: 0;
+    z-index: 10;
+  }
+
+  &-list {
+    @include mq("pc") {
+      padding: 0 20px;
+    }
+
+    @include mq("tab") {
+      display: flex;
+      border-top: 10px solid $cr-m;
+    }
+  }
+
+  &-item {
+    border-bottom: 1px solid $border-color;
+    text-align: center;
+
+    @include mq("pc") {
+      padding: 20px 0;
+    }
+
+    @include mq("tab") {
+      width: calc(100% / 3);
+      &:not(:last-child) {
+        border-right: 1px solid $border-color;
+      }
+    }
+  }
+
+  &-link {
+    padding: 14px 0;
+    color: #000;
+    font-size: 30px;
+    display: inline-block;
+    width: 100%;
+    transition: background-color .3s;
+
+    &:hover {
+        background-color: lighten($cr-m, 20%);
+      }
+
+    @include mq("tab") {
+      padding: 20px 5px;
+      font-size: 18px;
+    }
+
+  }
+}
+
+.active {
+  &.sidebar-link {
+    background-color: lighten($cr-m, 20%);
+  }
+}

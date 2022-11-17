@@ -1,0 +1,17 @@
+.header {
+  height: 85px;
+  padding: 20px 0 20px 15px;
+  background-color: #000;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+
+  h1 {
+    color: #fff;
+    font-size: 34px;
+    font-weight: normal;
+    letter-spacing: .1em;
+  }
+}

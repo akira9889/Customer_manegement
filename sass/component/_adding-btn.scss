@@ -1,0 +1,35 @@
+.adding-btn {
+  position: relative;
+  width: 280px;
+
+  @include mq("tab") {
+    margin-top: 30px;
+  }
+
+  a, button {
+    border: none;
+    display: inline-block;
+    background-color: $cr-m;
+    height: 50px;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 25px;
+    text-align: left;
+    width: 100%;
+    padding: 5px 20px;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background-color .3s;
+
+    &:hover {
+      background-color: darken($cr-m, 10%);
+    }
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 20px;
+  }
+}
