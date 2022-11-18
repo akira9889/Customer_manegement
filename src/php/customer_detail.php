@@ -26,13 +26,16 @@
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="index.php" class="sidebar-link">顧客情報一覧</a>
+          <a href="index.php" class="sidebar-link active">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
           <a href="visit-history.php" class="sidebar-link active2">来店履歴一覧</a>
         </li>
         <li class="sidebar-item">
           <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
+        </li>
+        <li class="sidebar-item">
+          <a href="register_user.php" class="sidebar-link">設定</a>
         </li>
       </ul>
     </div>

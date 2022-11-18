@@ -34,6 +34,9 @@
         <li class="sidebar-item">
           <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
         </li>
+        <li class="sidebar-item">
+          <a href="register_user.php" class="sidebar-link">設定</a>
+        </li>
       </ul>
     </div>
 

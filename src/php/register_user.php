@@ -34,12 +34,15 @@
         <li class="sidebar-item">
           <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
         </li>
+        <li class="sidebar-item">
+          <a href="register_user.php" class="sidebar-link active">設定</a>
+        </li>
       </ul>
     </div>
 
     <div class="main-content">
       <div class="main-inner">
-        <h2 class="main-title">管理者登録</h2>
+        <h2 class="main-title">ユーザー登録</h2>
 
         <form action="" class="register-form">
           <ul class="register-list">
