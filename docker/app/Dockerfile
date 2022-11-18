@@ -17,6 +17,10 @@ RUN npm i gulp node-sass -g
 COPY ./package.json /var/www/html/
 RUN npm install
 
+# composer のインストール
+COPY --from=composer:1.10 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
 # ファイルのコピー
 COPY ./src /var/www/html
 COPY ./gulpfile.js /var/www/html/
