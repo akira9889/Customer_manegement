@@ -26,7 +26,7 @@ function htmlClean() {
 }
 
 function php() {
-  return src('./php/*.php')
+  return src('./php/**/*.php')
     .pipe(dest('./public'));
 }
 
@@ -65,13 +65,13 @@ function jsClean() {
   return del(['./public/js']);
 }
 
-function lint() {
-  return src('./js/*.js')
-    .pipe($.eslintNew({ fix: true }))
-    .pipe($.eslintNew.format())
-    .pipe($.eslintNew.failAfterError())
-    .pipe(dest('./js'))
-}
+// function lint() {
+//   return src('./js/*.js')
+//     .pipe($.eslintNew({ fix: true }))
+//     .pipe($.eslintNew.format())
+//     .pipe($.eslintNew.failAfterError())
+//     .pipe(dest('./js'))
+// }
 
 function startAppServer() {
   //-------------------------------------
@@ -98,8 +98,7 @@ function startAppServer() {
     });
   });
 
-  watch('./html/*.html', series(htmlClean, extras));
-  watch('./php/*.php', series(phpClean, php));
+  watch('./php/**/*.php', series(phpClean, php));
   watch('./sass/**/*.scss', series(cssClean, styles));
   watch('./js/*.js', series(jsClean, scripts));
   watch(['./sass/**/*.scss',
@@ -109,14 +108,15 @@ function startAppServer() {
   ]).on('change', server.reload);
 }
 
-const build = series(parallel(extras, php, styles, series(lint, scripts)));
+// const build = series(parallel(extras, php, styles, series(lint, scripts)));
+const build = series(parallel(php, styles, series(scripts)));
 const serve = series(build, startAppServer);
 
 exports.extras = extras;
 exports.php = php;
 exports.styles = styles;
 exports.scripts = scripts;
-exports.lint = lint;
+// exports.lint = lint;
 exports.clean = clean;
 exports.htmlClean = htmlClean;
 exports.phpClean = phpClean;
