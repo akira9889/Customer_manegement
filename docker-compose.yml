@@ -12,6 +12,7 @@ services:
       - ./src/js:/var/www/html/js
       - ./src/php:/var/www/html/php
       - ./gulpfile.js:/var/www/html/gulpfile.js
+      - ./.env:/var/app/customer_manegement/.env
     ports:
       - "40080:80"
       - "3000:3000"
@@ -24,7 +25,7 @@ services:
       - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./docker/db/mysql_data:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: test
+      MYSQL_DATABASE: customer_manegement
       MYSQL_ROOT_PASSWORD: pass
       TZ: "Asia/Tokyo"
   phpmyadmin:

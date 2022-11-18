@@ -3,3 +3,4 @@
 docker/db/mysql_data
 .DS_Store
 src/public
+.env
