@@ -15,7 +15,7 @@
     <title>顧客予約一覧</title>
 </head>
 
-<body>
+<body class="register_shop">
     <header>
         <div class="header">
             <h1>Sample shop</h1>
@@ -32,6 +32,16 @@
                     <a href="register_shop.php" class="sidebar-link">店舗追加　＋</a>
                 </li>
             </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="main-inner">
+                <h3>千葉県</h3>
+                <ul class="shop-list">
+                    <li class="shop-item"><a class="shop-link" href="/customer_list.php?id=1">行徳</a></li>
+                    <li class="shop-item"><a class="shop-link" href="/customer_list.php">原木中山</a></li>
+                </ul>
+            </div>
         </div>
 
 </body>

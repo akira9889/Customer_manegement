@@ -1,0 +1,17 @@
+.shop-list {
+  display: flex;
+}
+
+.shop-item {
+
+  margin-top: 16px;
+  transition: color .3s;
+
+  & + & {
+    margin-left: 30px;
+  }
+
+  &:hover {
+    color: $cr-m;
+  }
+}

@@ -1,0 +1,27 @@
+.login-inner {
+  margin-top: $header-height + 56px;
+  .inner {
+    padding: 56px 0;
+    background-color: #fff;
+  }
+
+  .register-form {
+    margin-top: 0;
+  }
+
+  .register-item {
+    text-align: center;
+  }
+
+  .register-input {
+    justify-content: center;
+  }
+}
+
+.register-guid {
+  text-align: center;
+  margin-top: 32px;
+  a {
+    color: $cr-m;
+  }
+}
