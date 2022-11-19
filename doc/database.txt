@@ -1,5 +1,6 @@
 [shops]
 id
+company_id
 name
 
 [customers]
@@ -52,3 +53,8 @@ shop_id
 customer_id
 reserve_date
 reserve_date_time
+
+[company]
+id
+name
+password
