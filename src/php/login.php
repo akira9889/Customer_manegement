@@ -1,3 +1,27 @@
+<?php
+
+require_once(__DIR__ . '/functions.php');
+require_once(__DIR__ . '/Class/Login.php');
+
+session_start();
+
+if (isset($_SESSION['USER'])) {
+    redirect('/shop_list');
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = $_POST['name'];
+    $password = $_POST['password'];
+
+    $company = new Login('company');
+
+    $company->login($name, $password, '/shop_list.php' . '?company=' . $name);
+} else {
+    $name = '';
+}
+
+?>
+
 <!doctype html>
 <html lang="ja">
 
@@ -24,21 +48,23 @@
 
     <div class="login-inner">
         <div class="inner">
-            <form action="" class="register-form">
+            <form class="register-form" method="post">
                 <ul class="register-list">
                     <li class="register-item">
                         <label for="last-name">会社名</label>
                         <div class="register-input">
-                            <input type="text" name="name" placeholder="会社名">
+                            <input type="text" name="name" placeholder="会社名" value="<?= $name ?>">
                         </div>
+                        <p><?php if (isset($company->err['name'])) echo $company->err['name'] ?></p>
                     </li>
                     <li class="register-item">
                         <label for="last-name">パスワード</label>
                         <div class="register-input">
                             <input type="text" name="password" placeholder="パスワード">
                         </div>
+                        <p><?php if (isset($company->err['password'])) echo $company->err['password'] ?></p>
                     </li>
-                    <div class="register-btn">
+                    <div class=" register-btn">
                         <button type="submit">ログイン</button>
                     </div>
                 </ul>

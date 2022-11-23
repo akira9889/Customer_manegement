@@ -1,3 +1,19 @@
+<?php
+
+require_once(__DIR__ . '/Class/Register_user.php');
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = $_POST['name'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    $company = new RegisterUser();
+
+    $company->RegisterUser($name, $password, $confirm_password);
+
+    header('Location: /shop_list.php' . '?' . $name);
+}
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -26,7 +42,7 @@
         <div class="inner">
             <h2 class="main-title">会社登録</h2>
 
-            <form action="" class="register-form">
+            <form class="register-form" method="post">
                 <ul class="register-list">
                     <li class="register-item">
                         <label for="last-name">会社名</label>
