@@ -7,7 +7,7 @@
   @include mq("pc") {
     width: 300px;
     height: 100vh;
-    top: 85px;
+    top: $header-height;
     left: 0;
   }
 

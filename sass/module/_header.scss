@@ -1,16 +1,60 @@
 .header {
-  height: 85px;
-  padding: 20px 0 20px 15px;
   background-color: #000;
   width: 100%;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1;
+}
 
-  h1 {
-    color: #fff;
-    font-size: 34px;
-    letter-spacing: .1em;
+.header-content {
+  height: $header-height;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-nav {
+  display: flex;
+  height: 100%;
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+.header-logo {
+  margin-left: 17px;
+  color: #fff;
+  font-size: 34px;
+  letter-spacing: .1em;
+}
+
+.header-item-link {
+  color: #fff;
+  display: inline-block;
+  height: $header-height;
+  position: relative;
+  width: 100px;
+  transition: color .3s;
+
+  &::after {
+    content: 'ログアウト';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 10px;
+  }
+
+  i {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+  }
+
+  &:hover {
+    color: darken(#fff, 20%);
   }
 }
