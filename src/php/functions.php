@@ -1,5 +1,5 @@
 <?php
 function redirect($path) {
-header('Location:'. $path . '.php');
+header('Location:'. $path);
 exit;
 }
