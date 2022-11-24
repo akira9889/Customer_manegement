@@ -98,7 +98,7 @@ function startAppServer() {
     });
   });
 
-  // watch('./php/**/*.php', series(phpClean, php));
+  watch('./php/**/*.php', series(php));
   // watch('./sass/**/*.scss', series(cssClean, styles));
   watch('./sass/**/*.scss', series(styles));
   watch('./js/*.js', series(jsClean, scripts));
