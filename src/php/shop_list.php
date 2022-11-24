@@ -1,15 +1,17 @@
 <?php
 require_once(__DIR__ . '/functions.php');
+require_once(__DIR__ . '/Class/Shop_lists.php');
 
 session_start();
 
 if (!isset($_SESSION['USER'])) {
     //ログインされていない場合はログイン画面へ
-    redirect('/login');
+    redirect('/login.php');
 }
 
-//ログインユーザーの情報をセッションから取得
-$session_user = $_SESSION['USER'];
+$company_id = (int) $_GET['company_id'];
+
+$shops = new Shop_lists($company_id);
 ?>
 <!doctype html>
 <html lang="ja">
@@ -59,8 +61,9 @@ $session_user = $_SESSION['USER'];
             <div class="main-inner">
                 <h3>千葉県</h3>
                 <ul class="shop-list">
-                    <li class="shop-item"><a class="shop-link" href="/customer_list.php?<?= 'company_id=' . $session_user['id']?>&shop_id=1">行徳</a></li>
-                    <li class="shop-item"><a class="shop-link" href="/customer_list.php">原木中山</a></li>
+                    <?php foreach ($shops->listShops() as $shop): ?>
+                    <li class="shop-item"><a class="shop-link" href="/customer_list.php?<?= 'company_id=' . $_SESSION['USER']['id']?>&shop_id=<?= $shop['id']?>"><?= $shop['area'] ?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
         </div>
