@@ -6,7 +6,7 @@ require_once(__DIR__ . '/Class/Login.php');
 session_start();
 
 if (isset($_SESSION['USER'])) {
-    redirect('/shop_list');
+    redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $company = new Login('company');
 
-    $company->login($name, $password, '/shop_list.php' . '?company=' . $name);
+    $company->login($name, $password, '/shop_list.php' . '?company_id=' . $company->fetchUser($name)['id']);
 } else {
     $name = '';
 }
