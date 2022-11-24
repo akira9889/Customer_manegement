@@ -42,3 +42,5 @@ db:
 	docker compose exec db bash
 sql:
 	docker compose exec db bash -c 'mysql -u root -D customer_manegement -p'
+gulp:
+	docker compose exec app bash -c 'gulp'
