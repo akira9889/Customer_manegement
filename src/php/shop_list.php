@@ -1,15 +1,18 @@
 <?php
 require_once(__DIR__ . '/functions.php');
-require_once(__DIR__ . '/Class/Shop_lists.php');
+require_once(__DIR__ . '/Class/Shop_list.php');
 
 session_start();
 
-if (!isset($_SESSION['USER'])) {
-    //ログインされていない場合はログイン画面へ
-    redirect('/login.php');
+$company_id = (int) $_GET['company_id'];
+
+//ログインされていない場合はログイン画面へ
+
+if (!isset($_SESSION['USER']['admin']) || $_SESSION['USER']['admin'] !== 1 || $_SESSION['USER']['id'] !== $company_id) {
+        redirect('/login.php?company_id=' . $_GET['company_id']);
 }
 
-$company_id = (int) $_GET['company_id'];
+
 
 $shops = new Shop_lists($company_id);
 ?>
