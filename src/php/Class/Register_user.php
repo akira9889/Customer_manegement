@@ -16,9 +16,9 @@ final class RegisterUser
         ];
 
         $mysql = new ExecuteMySql($sql, $options);
-        $company = $mysql->execute();
+        $company = $mysql->execute()[0];
 
-        if (!$company[0] && $password === $confirm_password) {
+        if (!$company && $password === $confirm_password) {
             $sql = "INSERT INTO company (name, password)
                     VALUES(:name, :password)";
 

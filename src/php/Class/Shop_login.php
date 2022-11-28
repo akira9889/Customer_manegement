@@ -1,16 +1,15 @@
 <?php
 
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
+require_once(__DIR__ . '/Login.php');
 
-class Login
-{
+final class Shop_login extends Login {
+
     private readonly string $table_name;
 
     private readonly string $user_name;
 
     private readonly string $password;
-
-    public array $err;
 
     public function __construct(string $user_name, string $password, string $table_name)
     {
@@ -18,21 +17,27 @@ class Login
         $this->password = $password;
         $this->table_name = $table_name;
     }
+
+    private function getShopId() {
+        return $_GET['shop_id'];
+    }
+
     //ユーザー取得
-    public function fetchUser()
-    {
+    public function fetchUser() {
         $sql = "SELECT *
                 FROM {$this->table_name}
                 WHERE name = :name
+                AND shop_id = :shop_id
                 LIMIT 1";
 
         $options = [
-                    'name' => $this->user_name
-                    ];
+            'name' => $this->user_name,
+            'shop_id' => $this->getShopId()
+        ];
 
         $mysql = new ExecuteMySql($sql, $options);
 
-        if(!empty($mysql->execute()[0])) {
+        if (!empty($mysql->execute()[0])) {
             return $mysql->execute()[0];
         }
     }
@@ -43,18 +48,15 @@ class Login
 
         //バリデーションチェック
         if (!$user) $this->err['name'] = $this->user_name . 'というアカウントは登録されておりません。';
-        if (!$this->user_name) $this->err['name'] = '会社名を入力してください。';
+        if (!$this->user_name) $this->err['name'] = 'ユーザー名を入力してください。';
         if ($user && $this->password !== $user['password']) $this->err['password'] = 'パスワードが違います';
         if ($user && !$this->password) $this->err['password'] = 'パスワードを入力してください';
 
         if ($user && $this->password === $user['password']) {
             $_SESSION['USER'] = $user;
-            $_SESSION['USER']['admin'] = 1;
             return TRUE;
         } else {
             return FALSE;
         }
     }
 }
-
-?>

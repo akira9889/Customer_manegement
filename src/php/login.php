@@ -9,15 +9,19 @@ if (isset($_SESSION['USER'])) {
     redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
 }
 
+$name = '';
+$password = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $password = $_POST['password'];
 
-    $company = new Login('company');
+    $company = new Login($name, $password, 'company');
 
-    $company->login($name, $password, '/shop_list.php' . '?company_id=' . $company->fetchUser($name)['id']);
-} else {
-    $name = '';
+    if ($company->check_login()) {
+        redirect('/shop_list.php' . '?company_id=' . $company->fetchUser()['id']);
+    }
+
 }
 
 ?>
@@ -40,9 +44,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <h1>Sample shop</h1>
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-content">
+                <h1 class="header-logo">Sample shop</h1>
+                <nav id="header-nav" class="header-nav">
+                    <ul id="header-list" class="header-list">
+                        <li class="header-item">
+                            <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+                        </li>
+                </nav>
+            </div>
         </div>
     </header>
 
