@@ -5,8 +5,8 @@ require_once(__DIR__ . '/Class/Login.php');
 
 session_start();
 
-if (isset($_SESSION['USER'])) {
-    redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
+if (isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === 1 && $_SESSION['USER']['id'] === (int) $_GET['company_id']) {
+    redirect('/shop_list.php' . '?company_id=' . $_GET['id']);
 }
 
 $name = '';
@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($company->check_login()) {
         redirect('/shop_list.php' . '?company_id=' . $company->fetchUser()['id']);
     }
-
 }
 
 ?>
