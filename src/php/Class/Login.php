@@ -2,52 +2,59 @@
 
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
 
-final class Login
+class Login
 {
-    public readonly string $table_name;
+    private readonly string $table_name;
+
+    private readonly string $user_name;
+
+    private readonly string $password;
 
     public array $err;
 
-    public function __construct(string $table_name) {
+    public function __construct(string $user_name, string $password, string $table_name)
+    {
+        $this->user_name = $user_name;
+        $this->password = $password;
         $this->table_name = $table_name;
     }
     //ユーザー取得
-    public function fetchUser(string $name) {
+    public function fetchUser()
+    {
         $sql = "SELECT *
                 FROM {$this->table_name}
                 WHERE name = :name
                 LIMIT 1";
 
         $options = [
-                    'name' => $name,
+                    'name' => $this->user_name
                     ];
 
         $mysql = new ExecuteMySql($sql, $options);
 
-        return $mysql->execute()[0];
+        if(!empty($mysql->execute()[0])) {
+            return $mysql->execute()[0];
+        }
     }
 
-    public function login(string $name, string $password, string $url) {
-        $user = $this->fetchUser($name);
+    public function check_login()
+    {
+        $user = $this->fetchUser();
 
-        if (!$user) $this->err['name'] = $name . 'というユーザー名は登録されておりません。';
-        if (!$name) $this->err['name'] = '会社名を入力してください。';
+        //バリデーションチェック
+        if (!$user) $this->err['name'] = $this->user_name . 'というアカウントは登録されておりません。';
+        if (!$this->user_name) $this->err['name'] = '会社名を入力してください。';
+        if ($user && $this->password !== $user['password']) $this->err['password'] = 'パスワードが違います';
+        if ($user && !$this->password) $this->err['password'] = 'パスワードを入力してください';
 
-        if ($user && $password === $user['password']) {
+        if ($user && $this->password === $user['password']) {
             $_SESSION['USER'] = $user;
             $_SESSION['USER']['admin'] = 1;
-            $this->redirect($url);
+            return TRUE;
+        } else {
+            return FALSE;
         }
-
-        if ($user && $password !== $user['password']) $this->err['password'] = 'パスワードが違います';
-        if ($user && !$password) $this->err['password'] = 'パスワードを入力してください';
     }
-
-    private function redirect(string $url) {
-        header('Location:' . $url);
-        exit;
-    }
-
 }
 
 ?>

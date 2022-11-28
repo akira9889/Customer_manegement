@@ -9,15 +9,19 @@ if (isset($_SESSION['USER'])) {
     redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
 }
 
+$name = '';
+$password = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $password = $_POST['password'];
 
-    $company = new Login('company');
+    $company = new Login($name, $password, 'company');
 
-    $company->login($name, $password, '/shop_list.php' . '?company_id=' . $company->fetchUser($name)['id']);
-} else {
-    $name = '';
+    if ($company->check_login()) {
+        redirect('/shop_list.php' . '?company_id=' . $company->fetchUser()['id']);
+    }
+
 }
 
 ?>
