@@ -1,3 +1,14 @@
+<?php
+require_once(__DIR__ . '/functions.php');
+
+session_start();
+
+if (!(isset($_SESSION['USER']) && $_SESSION['USER']['shop_id'] === (int) $_GET['shop_id']) && $_SESSION['USER']['admin'] !== 1) {
+  //ログインされていない場合はログイン画面へ
+  redirect('/shop_login.php?shop_id=' . $_GET['shop_id']);
+}
+
+?>
 <!doctype html>
 <html lang="ja">
 
