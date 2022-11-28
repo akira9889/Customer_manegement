@@ -105,7 +105,6 @@ function startAppServer() {
   watch(['./sass/**/*.scss',
     './js/*.js',
     './html/*.html',
-    './php/*.php'
   ]).on('change', server.reload);
 }
 
