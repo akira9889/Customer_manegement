@@ -62,7 +62,10 @@ $shops = new Shop_lists($company_id);
                 <h3>千葉県</h3>
                 <ul class="shop-list">
                     <?php foreach ($shops->listShops() as $shop): ?>
-                    <li class="shop-item"><a class="shop-link" href="/customer_list.php?<?= 'company_id=' . $_SESSION['USER']['id']?>&shop_id=<?= $shop['id']?>"><?= $shop['area'] ?></a></li>
+                    <?php
+                    $url = '/shop_login.php?shop_id=' . $shop['id'];
+                    ?>
+                    <li class="shop-item"><a class="shop-link" href="<?= $url ?>"><?= $shop['area'] ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
