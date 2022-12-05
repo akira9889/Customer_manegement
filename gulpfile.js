@@ -31,7 +31,7 @@ function php() {
 }
 
 function phpClean() {
-  return del(['./public/*.php']);
+  return del(['./public/**/*.php']);
 }
 
 function styles() {
@@ -109,7 +109,7 @@ function startAppServer() {
 }
 
 // const build = series(parallel(extras, php, styles, series(lint, scripts)));
-const build = series(parallel(php, styles, series(scripts)));
+const build = series(phpClean, php, styles, scripts);
 const serve = series(build, startAppServer);
 
 exports.extras = extras;
