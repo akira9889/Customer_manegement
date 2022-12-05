@@ -9,3 +9,12 @@ function sessionDestroy() {
 
     session_destroy();
 }
+
+function group_by(array $table, string $key): array
+{
+    $groups = [];
+    foreach ($table as $row) {
+        $groups[$row[$key]][] = $row;
+    }
+    return $groups;
+}
