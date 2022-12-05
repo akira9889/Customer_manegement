@@ -45,16 +45,16 @@ if (!(isset($_SESSION['USER']) && $_SESSION['USER']['shop_id'] === (int) $_GET['
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php" class="sidebar-link active">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link active">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php" class="sidebar-link">来店履歴一覧</a>
+          <a href="visit-history.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
+          <a href="reserve_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">予約一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="register_user.php" class="sidebar-link">設定</a>
+          <a href="register_user.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">設定</a>
         </li>
       </ul>
     </div>
