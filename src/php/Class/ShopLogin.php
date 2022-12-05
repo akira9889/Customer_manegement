@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
 require_once(__DIR__ . '/Login.php');
 
-final class Shop_login extends Login {
+final class ShopLogin extends Login {
 
     private readonly string $table_name;
 
@@ -42,7 +42,7 @@ final class Shop_login extends Login {
         }
     }
 
-    public function check_login()
+    public function checkLogin()
     {
         $user = $this->fetchUser();
 
