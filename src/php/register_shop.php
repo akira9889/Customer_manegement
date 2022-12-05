@@ -1,3 +1,20 @@
+<?php
+require_once(__DIR__ . '/Class/RegisterShop.php');
+
+
+$prefectures = '';
+$area = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $prefectures_id = (int) $_POST['prefecture_id'];
+    $area = $_POST['area'];
+
+
+    $company = new RegisterShop($prefectures_id, $area);
+
+    $company->register_shop();
+}
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -34,10 +51,10 @@
         <div class="sidebar">
             <ul class="sidebar-list">
                 <li class="sidebar-item">
-                    <a href="shop_list.php" class="sidebar-link">店舗一覧</a>
+                    <a href="shop_list.php?company_id=<?= $_GET['company_id'] ?>" class="sidebar-link">店舗一覧</a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="register_shop.php" class="sidebar-link">店舗追加　＋</a>
+                    <a href="register_shop.php?company_id=<?= $_GET['company_id'] ?>" class="sidebar-link">店舗追加　＋</a>
                 </li>
             </ul>
         </div>
@@ -46,16 +63,15 @@
             <div class="main-inner">
                 <h2 class="main-title">店舗登録</h2>
 
-                <form action="" class="register-form">
+                <form class="register-form" method="post">
                     <ul class="register-list">
                         <li class="register-item register-item__shop">
                             <label for="last-name">店舗エリア</label>
-
                             <div class="register-area">
                                 <div class="register-input">
                                     <div class="register-input-select">
                                         <div class="select-container">
-                                            <select name="area" class="select_date">
+                                            <select name="prefecture_id" class="select_date">
                                                 <option value="" selected>都道府県</option>
                                                 <option value="1">北海道</option>
                                                 <option value="2">青森県</option>
@@ -110,23 +126,11 @@
                                 </div>
 
                                 <div class="register-input register-input__shop">
-                                    <input type="text" name="name" placeholder="品川">
-                                    <label for="">店</label>
+                                    <input id="area" type="text" name="area" placeholder="品川">
+                                    <label for="area">店</label>
                                 </div>
                             </div>
 
-                        </li>
-                        <li class="register-item">
-                            <label for="password">パスワード</label>
-                            <div class="register-input">
-                                <input type="text" name="password" placeholder="パスワード">
-                            </div>
-                        </li>
-                        <li class="register-item">
-                            <label for="last-name">パスワード確認</label>
-                            <div class="register-input">
-                                <input type="text" name="confirm_password" placeholder="パスワード確認">
-                            </div>
                         </li>
                         <div class="register-btn">
                             <button type="submit">登録</button>
