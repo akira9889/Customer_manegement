@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $password = $_POST['password'];
 
-    $company = new Login($name, $password, 'company');
+    $company = new Login($name, $password, 'companies');
 
     if ($company->check_login()) {
         redirect('/shop_list.php' . '?company_id=' . $company->fetchUser()['id']);
@@ -66,23 +66,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="register-input">
                             <input type="text" name="name" placeholder="会社名" value="<?= $name ?>">
                         </div>
-                        <p><?php if (isset($company->err['name'])) echo $company->err['name'] ?></p>
+                        <p class="invalid"><?php if (isset($company->err['name'])) echo $company->err['name'] ?></p>
                     </li>
                     <li class="register-item">
-                        <label for="last-name">パスワード</label>
+                            <label for="last-name">パスワード</label>
                         <div class="register-input">
                             <input type="text" name="password" placeholder="パスワード">
                         </div>
-                        <p><?php if (isset($company->err['password'])) echo $company->err['password'] ?></p>
+                        <p class="invalid"><?php if (isset($company->err['password'])) echo $company->err['password'] ?></p>
                     </li>
                     <div class=" register-btn">
-                        <button type="submit">ログイン</button>
-                    </div>
-                </ul>
-            </form>
-
-            <p class="register-guid">会社登録をしてない方は<a href="/register_company.php">こちら</a>で登録をしてください。</p>
+                            <button type="submit">ログイン</button>
         </div>
+        </ul>
+        </form>
+
+        <p class="register-guid">会社登録をしてない方は<a href="/register_company.php">こちら</a>で登録をしてください。</p>
+    </div>
     </div>
 
     </div>
