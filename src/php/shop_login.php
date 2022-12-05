@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/functions.php');
-require_once(__DIR__ . '/Class/Shop_login.php');
+require_once(__DIR__ . '/Class/ShopLogin.php');
 
 session_start();
 
@@ -16,13 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $password = $_POST['password'];
 
-    $user = new Shop_login($name, $password, 'users');
+    $user = new ShopLogin($name, $password, 'users');
 
-    if ($user->check_login()) {
+    if ($user->checkLogin()) {
         redirect('/customer_list.php?shop_id=' . $user->fetchUser($name)['shop_id']);
     };
 }
-
 ?>
 <!doctype html>
 <html lang="ja">
@@ -59,14 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="register-input">
                             <input type="text" name="name" placeholder="氏名" value="<?= $name ?>">
                         </div>
-                        <p><?php if (isset($user->err['name'])) echo $user->err['name'] ?></p>
+                        <p class="invalid"><?php if (isset($user->err['name'])) echo $user->err['name'] ?></p>
                     </li>
                     <li class="register-item">
                         <label for="last-name">パスワード</label>
                         <div class="register-input">
                             <input type="text" name="password" placeholder="パスワード">
                         </div>
-                        <p><?php if (isset($user->err['password'])) echo $user->err['password'] ?></p>
+                        <p class="invalid"><?php if (isset($user->err['password'])) echo $user->err['password'] ?></p>
                     </li>
                     <div class="register-btn">
                         <button type="submit">ログイン</button>
