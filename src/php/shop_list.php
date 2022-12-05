@@ -1,6 +1,6 @@
 <?php
 require_once(__DIR__ . '/functions.php');
-require_once(__DIR__ . '/Class/Shop_list.php');
+require_once(__DIR__ . '/Class/ShopList.php');
 
 session_start();
 
@@ -9,12 +9,11 @@ $company_id = (int) $_GET['company_id'];
 //ログインされていない場合はログイン画面へ
 
 if (!isset($_SESSION['USER']['admin']) || $_SESSION['USER']['admin'] !== 1 || $_SESSION['USER']['id'] !== $company_id) {
-        redirect('/login.php?company_id=' . $_GET['company_id']);
+        redirect('/login.php?company_id=' . $company_id);
 }
 
+$shops = new ShopList($company_id);
 
-
-$shops = new Shop_lists($company_id);
 ?>
 <!doctype html>
 <html lang="ja">
@@ -55,22 +54,39 @@ $shops = new Shop_lists($company_id);
                     <a href="shop_list.php" class="sidebar-link">店舗一覧</a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="register_shop.php" class="sidebar-link">店舗追加　＋</a>
+                    <a href="register_shop.php?company_id=<?= $company_id ?>"  class="sidebar-link">店舗追加　＋</a>
                 </li>
             </ul>
         </div>
 
         <div class="main-content">
             <div class="main-inner">
-                <h3>千葉県</h3>
-                <ul class="shop-list">
-                    <?php foreach ($shops->listShops() as $shop): ?>
+                <?php
+                $group_by_prefectures = group_by($shops->listShops(), 'prefecture');
+                // var_dump($group_by_prefectures);
+                // exit;
+                $prefectures = array_keys($group_by_prefectures);
+                for ($i = 0; $i < count($group_by_prefectures); $i++):
+                ?>
+                <h3 class="shop_prefecture">
                     <?php
+                        $prefecture = $prefectures[$i];
+                        echo $prefecture;
+                    ?>
+                </h3>
+                <ul class="shop-list">
+                    <?php
+                    foreach ($group_by_prefectures[$prefecture] as $shop):
                     $url = '/shop_login.php?shop_id=' . $shop['id'];
                     ?>
-                    <li class="shop-item"><a class="shop-link" href="<?= $url ?>"><?= $shop['area'] ?></a></li>
+                    <li class="shop-item">
+                        <a class="shop-link" href="<?= $url ?>">
+                        <?= $shop['area']?>
+                        </a>
+                    </li>
                     <?php endforeach; ?>
                 </ul>
+                <?php endfor; ?>
             </div>
         </div>
 
