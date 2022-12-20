@@ -30,10 +30,15 @@
   }
 
   tbody {
+
+    th {
+        padding: 11px 0 11px 20px;
+    }
+
     td {
-      //最後のtdのから要素を除いている
+      //最後のtdの空要素を除いている
       &:not(:last-child) {
-        padding: 11px 0 11px 10px;
+        padding: 11px 10px 11px;
         border-top: 1px solid $border-color;
         border-left: 1px solid $border-color;
       }
@@ -50,6 +55,10 @@
     background-color: $cr-m;
     color: #fff, ;
   }
+}
+
+.name {
+  text-align: left;
 }
 
 .memo {
