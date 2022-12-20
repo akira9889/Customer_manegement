@@ -18,3 +18,8 @@ function group_by(array $table, string $key): array
     }
     return $groups;
 }
+
+function h($str)
+{
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
