@@ -1,11 +1,28 @@
 <?php
 
 require_once(__DIR__ . '/functions.php');
+require_once(__DIR__ . '/Class/RegisterCompany.php');
 require_once(__DIR__ . '/Class/ShopLogin.php');
 
 session_start();
 
-if (isset($_SESSION['USER']['admin'])) {
+$sql = "SELECT company_id
+        FROM shops
+        WHERE id = :shop_id
+        LIMIT 1";
+
+$options = [
+    'shop_id' => (int) $_GET['shop_id']
+];
+
+$mysql = new ExecuteMySql($sql, $options);
+
+$company_id = 0;
+if (!empty($mysql->execute()[0])) {
+    $company_id = $mysql->execute()[0];
+}
+
+if ((isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === (int) $_GET['shop_id']) || (isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === RegisterCompany::OWNER && isset($company_id['company_id']) && $company_id['company_id'] === $_SESSION['USER']['id'])) {
     redirect('/customer_list.php?shop_id=' . $_GET['shop_id']);
 }
 

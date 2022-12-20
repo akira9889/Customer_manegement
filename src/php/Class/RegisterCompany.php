@@ -70,7 +70,7 @@ require_once __DIR__ . '/../lib/ExecuteMySql.php';
 
 class RegisterCompany
 {
-    private const OWNER = 1;
+    public const OWNER = 1;
 
     private readonly string $name;
 
