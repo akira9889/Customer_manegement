@@ -1,13 +1,53 @@
 <?php
 require_once(__DIR__ . '/functions.php');
+require_once(__DIR__ . '/Class/RegisterCompany.php');
+require_once(__DIR__ . '/Class/CustomerList.php');
 
 session_start();
 
-if (!(isset($_SESSION['USER']) && $_SESSION['USER']['shop_id'] === (int) $_GET['shop_id']) && $_SESSION['USER']['admin'] !== 1) {
+$sql = "SELECT company_id
+        FROM shops
+        WHERE id = :shop_id
+        LIMIT 1";
+
+$options = [
+  'shop_id' => (int) $_GET['shop_id']
+];
+
+$mysql = new ExecuteMySql($sql, $options);
+
+if (!empty($mysql->execute()[0])) {
+  $company_id = $mysql->execute()[0];
+}
+
+if (!(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === (int) $_GET['shop_id'])) && !(isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === RegisterCompany::OWNER && isset($company_id['company_id']) && $company_id['company_id'] === $_SESSION['USER']['id'])) {
   //ログインされていない場合はログイン画面へ
   redirect('/shop_login.php?shop_id=' . $_GET['shop_id']);
 }
 
+$shop_id = (int) filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
+$left = (int) filter_input(INPUT_GET, 'left', FILTER_VALIDATE_INT, [
+  'options' => ['min_range' => 1],
+]);
+
+$right = (int) filter_input(INPUT_GET, 'right', FILTER_VALIDATE_INT, [
+  'options' => ['min_range' => 1],
+]);
+
+$count = (int) filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
+  'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
+]) ?: 10;
+
+$customer_data = new CustomerList( (int) $shop_id, $count);
+
+if (is_int($left)) {
+  $customer_list = $customer_data->fetchNextCustomerList($left);
+} elseif (is_int($right)) {
+  $customer_list = $customer_data->fetchPrevCustomerList($right);
+} else {
+  $customer_list = $customer_data->fetchCustomerList();
+}
 ?>
 <!doctype html>
 <html lang="ja">
@@ -80,106 +120,35 @@ if (!(isset($_SESSION['USER']) && $_SESSION['USER']['shop_id'] === (int) $_GET['
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>000-0000-0000</td>
-              <td>test@gmail.com</td>
-              <td>1990-09-09</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
+            <?php foreach ($customer_list as $customer) : ?>
+              <tr>
+                <th class="name"><?= $customer['first_name'] . '&nbsp;' . $customer['id'] ?></th>
+                <td><?= $customer['tel'] ?></td>
+                <td><?= $customer['email'] ?></td>
+                <td><?= $customer['birthday'] ?></td>
+                <td class="row-link"><a href="customer_detail.php?id=<?= $customer['id'] ?>"></a></td>
+              </tr>
+            <?php endforeach; ?>
           </tbody>
         </table>
       </div>
 
+      <?php if ($customer_list): ?>
       <div class="pagenation-inner">
         <ul class="pagenation-list">
+          <?php if ($customer_data->prev_right !== null): ?>
           <li class="pagenation-item">
-            <a href="#" class="pagenation-link prev">&lt;&lt;</a>
+            <a href="<?= h("?shop_id=$shop_id&right=$customer_data->prev_right&count=$count") ?>" class="pagenation-link prev">&lt;&lt;</a>
           </li>
+          <?php endif; ?>
+          <?php if ($customer_data->next_left !== null): ?>
           <li class="pagenation-item">
-            <a href="#" class="pagenation-link">1</a>
+            <a href="<?=h("?shop_id=$shop_id&left=$customer_data->next_left&count=$count")?>" class="pagenation-link next">&gt;&gt;</a>
           </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link active">2</a>
-          </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link">3</a>
-          </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link next">&gt;&gt;</a>
-          </li>
+          <?php endif; ?>
         </ul>
       </div>
+      <?php endif; ?>
     </div>
   </div>
 
