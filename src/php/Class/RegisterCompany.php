@@ -78,6 +78,8 @@ class RegisterCompany
 
     private readonly string $confirm_password;
 
+    public int $admin_state;
+
     public array $err;
 
     public function __construct(string $name, string $password, string $confirm_password)
@@ -94,13 +96,13 @@ class RegisterCompany
         $this->validateInputs();
 
         if (empty($this->err)) {
-            $sql = "INSERT INTO companies (shop_id, name, password, admin_state)
-                    VALUES(:shop_id, :name, :password, :admin_state)";
+            $sql = "INSERT INTO companies (name, password)
+                    VALUES(:name, :password)";
 
             $options = [
                 'name' => $this->name,
                 'password' => $this->password,
-                'admin_state' => $this->admin_state
+                // 'admin_state' => $this->admin_state
             ];
 
             $mysql = new ExecuteMySql($sql, $options);
