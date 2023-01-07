@@ -84,6 +84,8 @@ class CustomerList
 
         $mysql = new ExecuteMySql($sql, $options);
         $rows = $mysql->execute();
+        // var_dump($rows);
+        // exit;
 
         $this->next_left = isset($rows[0]) && $rows[0]['id'] > $right ? $rows[0]['id'] : null;
         $rows = array_slice($rows, (int) ($this->next_left !== null));

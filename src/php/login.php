@@ -47,12 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="header-inner">
             <div class="header-content">
                 <h1 class="header-logo">Sample shop</h1>
-                <nav id="header-nav" class="header-nav">
-                    <ul id="header-list" class="header-list">
-                        <li class="header-item">
-                            <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
-                        </li>
-                </nav>
             </div>
         </div>
     </header>
@@ -77,12 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </li>
                     <div class=" register-btn">
                             <button type="submit">ログイン</button>
+                    </div>
+                </ul>
+            </form>
+            <p class="register-guid">会社登録をしてない方は<a href="/register_company.php">こちら</a>で登録をしてください。</p>
         </div>
-        </ul>
-        </form>
-
-        <p class="register-guid">会社登録をしてない方は<a href="/register_company.php">こちら</a>で登録をしてください。</p>
-    </div>
     </div>
 
     </div>

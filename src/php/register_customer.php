@@ -1,3 +1,35 @@
+<?php
+require_once(__DIR__ . '/Class/RegisterCustomer.php');
+
+$last_name = '';
+$first_name = '';
+$last_name_kana = '';
+$first_name_kana = '';
+$email = '';
+$birthday_year = '';
+$birthday_month = '';
+$birthday_date = '';
+$tel = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $last_name = filter_input(INPUT_POST, 'last-name');
+  $first_name = filter_input(INPUT_POST, 'first-name');
+  $last_name_kana = filter_input(INPUT_POST, 'last-name-kana');
+  $first_name_kana = filter_input(INPUT_POST, 'first-name-kana');
+  $gender = filter_input(INPUT_POST, 'gender');
+  $email = filter_input(INPUT_POST, 'email');
+  $birthday_year = filter_input(INPUT_POST, 'birthday_year');
+  $birthday_month = filter_input(INPUT_POST, 'birthday_month');
+  $birthday_date = filter_input(INPUT_POST, 'birthday_date');
+  $birthday = $birthday_year . '-' . $birthday_month . '-' . $birthday_date;
+  $tel = filter_input(INPUT_POST, 'tel');
+
+  $new_customer = new RegisterCustomer($last_name, $first_name, $last_name_kana, $first_name_kana, $gender, $email, $birthday_year, $birthday_month, $birthday_date, $tel);
+
+  $new_customer->registerCustomer();
+}
+
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -34,7 +66,7 @@
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php" class="sidebar-link">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
           <a href="visit-history.php" class="sidebar-link active2">来店履歴一覧</a>
@@ -52,14 +84,15 @@
       <div class="main-inner">
         <h2 class="main-title">お客様登録</h2>
 
-        <form action="" class="register-form">
+        <form class="register-form" method="post">
           <ul class="register-list">
             <li class="register-item">
               <label for="last-name">氏名</label>
               <div class="register-input">
-                <input type="text" name="last-name" placeholder="姓">
-                <input type="text" name="first-name" placeholder="名">
+                <input type="text" name="last-name" placeholder="姓" value="<?= $last_name ?>">
+                <input type="text" name="first-name" placeholder="名" value="<?= $first_name ?>">
               </div>
+              <p class="invalid"><?php if (isset($new_customer->err['name'])) echo $new_customer->err['name'] ?></p>
             </li>
             <li class="register-item">
               <label for="last-name">フリガナ</label>
@@ -67,20 +100,22 @@
                 <input type="text" name="last-name-kana" placeholder="セイ">
                 <input type="text" name="first-name-kana" placeholder="メイ">
               </div>
+              <p class="invalid"><?php if (isset($new_customer->err['kana'])) echo $new_customer->err['kana'] ?></p>
             </li>
 
             <li class="register-item">
               <label for="last-name">性別</label>
               <div class="register-input-radio">
                 <label for="male">
-                  <input type="radio" name="gender" value="男性" id="male" checked>男性
+                  <input type="radio" name="gender" value="男性" id="male" <?php if (isset($gender) && $gender === '男性') echo 'checked' ?>>男性
                   <span></span>
                 </label>
                 <label for="female">
-                  <input type="radio" name="gender" value="女性" id="female">女性
+                  <input type="radio" name="gender" value="女性" id="female" <?php if (isset($gender) && $gender === '女性') echo 'checked' ?>>女性
                   <span></span>
                 </label>
               </div>
+              <p class="invalid"><?php if (isset($new_customer->err['gender'])) echo $new_customer->err['gender'] ?></p>
             </li>
 
             <li class="register-item">
@@ -88,95 +123,37 @@
               <div class="register-input">
                 <input type="text" name="email" placeholder="メールアドレス">
               </div>
+              <p class="invalid"><?php if (isset($new_customer->err['email'])) echo $new_customer->err['email'] ?></p>
             </li>
 
             <li class="register-item">
-              <label for="email">生年月日</label>
+              <label for="birthday">生年月日</label>
+              <p class="birthday-example">例: <strong>1960</strong><span>年</span><strong>09</strong><span>月</span><strong>03</strong><span>日</span></p>
               <div class="register-input">
-                <div class="register-input-select">
-                  <div class="select-container">
-                    <select name="birthday_yaer" class="select_date">
-                      <option value="1960">1960</option>
-                      <option value="1961">1961</option>
-                      <option value="1962">1962</option>
-                      <option value="1963">1963</option>
-                      <option value="1964">1964</option>
-                      <option value="1965">1965</option>
-                      <option value="1966">1966</option>
-                      <option value="1967">1967</option>
-                      <option value="1968">1968</option>
-                      <option value="1969">1969</option>
-                      <option value="1970">1970</option>
-                    </select>
-                  </div>
+                <div class="register-input-birthday">
+                  <input type="text" name="birthday_year" placeholder="1960" value="<?= $birthday_year ?>">
                   <label for="">年</label>
                 </div>
 
-                <div class="register-input-select">
-                  <div class="select-container">
-                    <select name="birthday_month" class="select_date">
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
-                      <option value="11">11</option>
-                      <option value="12">12</option>
-                    </select>
-                  </div>
+                <div class="register-input-birthday">
+                  <input type="text" name="birthday_month" placeholder="09" value="<?= $birthday_month ?>">
                   <label for="">月</label>
                 </div>
 
-                <div class="register-input-select">
-                  <div class="select-container">
-                    <select name="birthday_date" class="select_date">
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
-                      <option value="11">11</option>
-                      <option value="12">12</option>
-                      <option value="13">13</option>
-                      <option value="14">14</option>
-                      <option value="15">15</option>
-                      <option value="16">16</option>
-                      <option value="17">17</option>
-                      <option value="18">18</option>
-                      <option value="19">19</option>
-                      <option value="20">20</option>
-                      <option value="21">21</option>
-                      <option value="22">22</option>
-                      <option value="23">23</option>
-                      <option value="24">24</option>
-                      <option value="25">25</option>
-                      <option value="26">26</option>
-                      <option value="27">27</option>
-                      <option value="28">28</option>
-                      <option value="29">29</option>
-                      <option value="30">30</option>
-                    </select>
-                  </div>
+                <div class="register-input-birthday">
+                  <input type="text" name="birthday_date" placeholder="03" value="<?= $birthday_date ?>">
                   <label for="">日</label>
                 </div>
               </div>
+              <p class="invalid"><?php if (isset($new_customer->err['birthday'])) echo $new_customer->err['birthday'] ?></p>
             </li>
 
             <li class="register-item">
               <label for="email">電話番号</label>
               <div class="register-input">
-                <input type="tel" name="tel" placeholder="電話番号">
+                <input type="tel" name="tel" placeholder="0123456789(ハイフン等なし)">
               </div>
+              <p class="invalid"><?php if (isset($new_customer->err['tel'])) echo $new_customer->err['tel'] ?></p>
             </li>
           </ul>
 

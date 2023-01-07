@@ -128,7 +128,7 @@
   }
 }
 
-.register-input-select {
+.register-input-birthday {
   display: flex;
   align-items: center;
 
@@ -141,31 +141,23 @@
     }
   }
 
-  .select_date {
-    border: 1px solid $border-color;
-    padding-left: 32px;
-    height: 40px;
-    cursor: pointer;
-
-    @include mq("tab") {
-      margin-right: 15px;
-    }
+  input[type="text"] {
+    width: 100px;
+    margin-right: 10px;
+    padding: 0;
+    text-align: center;
   }
 
 }
 
-.register-input-select {
+.birthday-example {
+  font-size: 18px;
+  margin-top: 24px;
 
-  &:first-child {
-    .select_date {
-      width: 170px;
-    }
-  }
-
-  &:not(:first-child) {
-    .select_date {
-      width: 110px;
-    }
+  span {
+    color: $gray;
+    margin: 0 7px 0 7px;
+    display: inline-block;
   }
 }
 
