@@ -25,17 +25,17 @@ if (!(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESS
   redirect('/shop_login.php?shop_id=' . $_GET['shop_id']);
 }
 
-$shop_id = (int) filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
-$left = (int) filter_input(INPUT_GET, 'left', FILTER_VALIDATE_INT, [
+$left = filter_input(INPUT_GET, 'left', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1],
 ]);
 
-$right = (int) filter_input(INPUT_GET, 'right', FILTER_VALIDATE_INT, [
+$right = filter_input(INPUT_GET, 'right', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1],
 ]);
 
-$count = (int) filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
+$count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
 ]) ?: 10;
 
@@ -48,6 +48,7 @@ if (is_int($left)) {
 } else {
   $customer_list = $customer_data->fetchCustomerList();
 }
+
 ?>
 <!doctype html>
 <html lang="ja">
@@ -105,7 +106,7 @@ if (is_int($left)) {
           <input type="text" placeholder="検索" class="search">
         </form>
         <div class="adding-btn">
-          <a href="register_customer.php">顧客新規作成<span>＋</span></a>
+          <a href="register_customer.php?shop_id=<?= (int) $_GET['shop_id'] ?>">顧客新規作成<span>＋</span></a>
         </div>
       </div>
 
@@ -122,7 +123,7 @@ if (is_int($left)) {
           <tbody>
             <?php foreach ($customer_list as $customer) : ?>
               <tr>
-                <th class="name"><?= $customer['first_name'] . '&nbsp;' . $customer['id'] ?></th>
+                <th class="name"><?= $customer['last_name'] . '&nbsp;' . $customer['first_name'] ?></th>
                 <td><?= $customer['tel'] ?></td>
                 <td><?= $customer['email'] ?></td>
                 <td><?= $customer['birthday'] ?></td>
