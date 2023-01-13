@@ -1,3 +1,19 @@
+<?php
+require_once(__DIR__ . '/Class/Customer.php');
+// id取得
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+// 顧客情報の取得
+$customer = new Customer($id);
+
+$customer_data = $customer->fetchCustomerData();
+
+$visit_history_data = $customer->fetchCustomerHistoriesData();
+
+$keep_bottles = $customer->fetchCustomerKeepBottle();
+
+//顧客情報の表示
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -59,62 +75,58 @@
           <div class="customer-name">
             <div class="customer-last-name">
               <ruby>
-                <rt>スズキ</rt>
-                <rb>鈴木</rb>
+                <rt><?= $customer_data['last_kana'] ?></rt>
+                <rb><?= $customer_data['last_name'] ?></rb>
               </ruby>
             </div>
             <div class="customer-first-name">
               <ruby>
-                <rt>タロウ</rt>
-                <rb>太郎</rb>
+                <rt><?= $customer_data['first_kana'] ?></rt>
+                <rb><?= $customer_data['first_name'] ?></rb>
               </ruby>
             </div>
           </div>
 
-          <p><span>男性</span><span>24歳</span></p>
+          <p><span><?= $customer_data['gender'] ?></span><span><?php echo Customer::fetchAge($customer_data['birthday']); ?>歳</span></p>
         </div>
 
         <div class="customer-sub-detail">
           <dl>
             <dt>生年月日</dt>
-            <dd>1998年09月09日</dd>
+            <dd><?php echo date('Y年m月d日', strtotime($customer_data['birthday'])) ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>メールアドレス</dt>
-            <dd>test@gmail.com</dd>
+            <dd><?= $customer_data['email'] ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>電話番号</dt>
-            <dd>000-0000-0000</dd>
+            <dd><?= $customer_data['tel'] ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>キープボトル銘柄</dt>
-            <dd>ジャックダニエルブラック<span>（1本）</span></dd>
-            <dd>いいちこ<span>（1本）</span></dd>
-          </dl>
-        </div>
-        <div class="customer-sub-detail">
-          <dl>
-            <dt>未払い料</dt>
-            <dd>100,000円</dd>
+            <?php foreach ($keep_bottles as $keep_bottle): ?>
+            <dd><?= $keep_bottle['name'] ?><span>（<?= $keep_bottle['bottle_num'] ?>本）</span></dd>
+            <?php endforeach; ?>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>メモ</dt>
-            <dd>テキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト</dd>
+            <dd><?= $customer_data['information'] ?></dd>
           </dl>
         </div>
         <div class="edit-btn">
           <button type="button">編集</button>
         </div>
       </div>
+
 
       <div class="table-wrap">
         <p>（最新10件）</p>
@@ -128,72 +140,14 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
-            <tr>
-              <th>1990-09-09</th>
-              <td>10,000円</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
-            </tr>
+            <?php foreach ($visit_history_data as $data) : ?>
+              <tr>
+                <th><?= $data['date'] ?></th>
+                <td><?= number_format($data['price']) ?>円</td>
+                <td class="memo"><?= $data['memo'] ?></td>
+                <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
+              </tr>
+            <?php endforeach; ?>
           </tbody>
         </table>
       </div>
