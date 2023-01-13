@@ -16,7 +16,6 @@ birthday
 gender
 supplementary_information
 
-
 [visit_histories]
 id
 shop_id
@@ -24,21 +23,20 @@ user_id
 customer_id
 date
 price
-unpaid_price
+memo
 
-[order_histories]
+[keep_bottles]
 id
 shop_id
 customer_id
-menu_id
-order_num
+bottle_id
+bottle_num
 
-[menus]
+[bottles]
 id
 shop_id
 name
 price
-category
 
 [users]
 id
@@ -46,15 +44,16 @@ shop_id
 name
 email
 password
+admin_state
 
-[reserve]
+[reserves]
 id
 shop_id
 customer_id
 reserve_date
 reserve_date_time
 
-[company]
+[companies]
 id
 name
 password
