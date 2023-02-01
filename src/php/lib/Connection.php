@@ -10,7 +10,7 @@ Dotenv\Dotenv::createImmutable('/var/app/customer_manegement')->load();
 class Connection
 {
 
-    protected readonly PDO $pdo;
+    public readonly PDO $pdo;
 
     private readonly string $dsn;
 
