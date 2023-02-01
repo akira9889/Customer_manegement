@@ -6,7 +6,7 @@
 
 .customer-name {
   font-weight: bold;
-  margin-top: 66px;
+  margin-top: 16px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -30,7 +30,9 @@
 }
 
 .customer-main-detail {
-  p {
+  padding-top: 66px;
+
+  .gender {
     margin-top: 48px;
     text-align: center;
     font-weight: bold;
@@ -39,6 +41,10 @@
 
   span + span {
     margin-left: 20px;
+  }
+
+  .invalid {
+    text-align: center;
   }
 }
 
@@ -71,8 +77,32 @@
   dd {
     margin-top: 24px;
   }
-}
 
+  input {
+    width: 50%;
+  }
+
+  #birthday {
+    display: flex;
+    justify-content: center;
+
+    div {
+      display: flex;
+      align-items: center;
+      width: 110px;
+
+      input {
+        text-align: center;
+      }
+
+      span {
+        display: inline-block;
+        margin-left: 15px;
+      }
+
+    }
+  }
+}
 
 .edit-btn {
   width: 200px;

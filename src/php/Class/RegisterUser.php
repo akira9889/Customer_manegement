@@ -11,6 +11,8 @@ class RegisterUser
 
     private readonly string $confirm_password;
 
+    private int $admin_state;
+
     private bool $registered_state;
 
     public array $err;
@@ -21,7 +23,7 @@ class RegisterUser
         $this->password = $password;
         $this->confirm_password = $confirm_password;
         $this->admin_state = $admin_state;
-        $this->complete_registered_statestate = FALSE;
+        $this->registered_state = FALSE;
     }
 
     //ユーザー登録

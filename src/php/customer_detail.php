@@ -1,18 +1,44 @@
 <?php
+
+require_once(__DIR__ . '/Class/RegisterCustomer.php');
 require_once(__DIR__ . '/Class/Customer.php');
+require_once(__DIR__ . '/functions.php');
 // id取得
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
-// 顧客情報の取得
 $customer = new Customer($id);
-
 $customer_data = $customer->fetchCustomerData();
+
+$shop_id = $customer_data['shop_id'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $last_name = filter_input(INPUT_POST, 'last_name');
+  $first_name = filter_input(INPUT_POST, 'first_name');
+  $last_kana = filter_input(INPUT_POST, 'last_kana');
+  $first_kana = filter_input(INPUT_POST, 'first_kana');
+  $email = filter_input(INPUT_POST, 'email');
+  $birthday_year = filter_input(INPUT_POST, 'birthday_year');
+  $birthday_month = filter_input(INPUT_POST, 'birthday_month');
+  $birthday_date = filter_input(INPUT_POST, 'birthday_date');
+  $tel = filter_input(INPUT_POST, 'tel');
+  $gender = filter_input(INPUT_POST, 'gender');
+  $information = filter_input(INPUT_POST, 'information');
+
+  $new_customer = new RegisterCustomer($last_name, $first_name, $last_kana, $first_kana, $email, $birthday_year, $birthday_month, $birthday_date, $tel, $gender, $information);
+
+  $new_customer->registerCustomer();
+
+  $php_array = $new_customer->err;
+  $json_array = json_encode($php_array);
+
+  if ($new_customer->registered_state) {
+    redirect('customer_detail.php?id=' . $id);
+  }
+}
 
 $visit_history_data = $customer->fetchCustomerHistoriesData();
 
 $keep_bottles = $customer->fetchCustomerKeepBottle();
-
-//顧客情報の表示
 ?>
 <!doctype html>
 <html lang="ja">
@@ -50,16 +76,16 @@ $keep_bottles = $customer->fetchCustomerKeepBottle();
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php" class="sidebar-link active">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php" class="sidebar-link">来店履歴一覧</a>
+          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
+          <a href="reserve_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">予約一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="register_user.php" class="sidebar-link">設定</a>
+          <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
         </li>
       </ul>
     </div>
@@ -68,65 +94,55 @@ $keep_bottles = $customer->fetchCustomerKeepBottle();
       <div class="adding-btn">
         <button type="button" class="modal-open">来店履歴追加<span>＋</span></button>
       </div>
-      <div class="main-inner">
+      <div class="main-inner customer-form">
         <h2 class="main-title">お客様情報</h2>
 
         <div class="customer-main-detail">
           <div class="customer-name">
             <div class="customer-last-name">
               <ruby>
-                <rt><?= $customer_data['last_kana'] ?></rt>
-                <rb><?= $customer_data['last_name'] ?></rb>
+                <rt class="input" data-name="last_kana" data-type="text"><?= $customer_data['last_kana'] ?></rt>
+                <rb class="input" data-name="last_name" data-type="text"><?= $customer_data['last_name'] ?></rb>
               </ruby>
             </div>
-            <div class="customer-first-name">
+            <div class=" customer-first-name">
               <ruby>
-                <rt><?= $customer_data['first_kana'] ?></rt>
-                <rb><?= $customer_data['first_name'] ?></rb>
+                <rt class="input" data-name="first_kana" data-type="text"><?= $customer_data['first_kana'] ?></rt>
+                <rb class="input" data-name="first_name" data-type="text"><?= $customer_data['first_name'] ?></rb>
               </ruby>
             </div>
           </div>
-
-          <p><span><?= $customer_data['gender'] ?></span><span><?php echo Customer::fetchAge($customer_data['birthday']); ?>歳</span></p>
+          <div class="gender"><span><?= $customer_data['gender'] ?></span><span><?php echo Customer::fetchAge($customer_data['birthday']); ?>歳</span></div>
         </div>
 
         <div class="customer-sub-detail">
           <dl>
             <dt>生年月日</dt>
-            <dd><?php echo date('Y年m月d日', strtotime($customer_data['birthday'])) ?></dd>
+            <dd id="birthday" class="input"><?php echo date('Y年m月d日', strtotime($customer_data['birthday'])) ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>メールアドレス</dt>
-            <dd><?= $customer_data['email'] ?></dd>
+            <dd class="input" data-name="email" data-type="email"><?= $customer_data['email'] ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>電話番号</dt>
-            <dd><?= $customer_data['tel'] ?></dd>
-          </dl>
-        </div>
-        <div class="customer-sub-detail">
-          <dl>
-            <dt>キープボトル銘柄</dt>
-            <?php foreach ($keep_bottles as $keep_bottle): ?>
-            <dd><?= $keep_bottle['name'] ?><span>（<?= $keep_bottle['bottle_num'] ?>本）</span></dd>
-            <?php endforeach; ?>
+            <dd class="input" data-name="tel" data-type="tel"><?= $customer_data['tel'] ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>メモ</dt>
-            <dd><?= $customer_data['information'] ?></dd>
+            <dd class="input" data-name="information" data-type="textarea"><?= $customer_data['information'] ?></dd>
           </dl>
         </div>
         <div class="edit-btn">
           <button type="button">編集</button>
         </div>
       </div>
-
 
       <div class="table-wrap">
         <p>（最新10件）</p>
@@ -178,6 +194,46 @@ $keep_bottles = $customer->fetchCustomerKeepBottle();
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
   <script src="/js/script.js"></script>
+  <script>
+    $(document).on('focusout', 'input', function() {
+      $.ajax({
+        url: 'ajax_input_change.php', //データベースを繋げるファイル
+        type: "POST",
+        data: {
+          first_name: $('input[name=first_name]').val(),
+          last_name: $('input[name=last_name]').val(),
+          first_kana: $('input[name=first_kana]').val(),
+          last_kana: $('input[name=last_kana]').val(),
+          email: $('input[name=email]').val(),
+          birthday_year: $('input[name=birthday_year]').val(),
+          birthday_month: $('input[name=birthday_month]').val(),
+          birthday_date: $('input[name=birthday_date]').val(),
+          tel: $('input[name=tel]').val()
+        },
+        dataType: "json"
+      }).done(function(err) {
+        Object.keys(err).forEach(key => {
+          // console.log(err);
+          if (key === 'name' || key === 'kana') {
+            $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
+            $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
+          } else if (key === 'birthday') {
+            $('#birthday').prev().remove()
+            $('#birthday').before(`<p class="invalid">${err[key]}</p>`)
+          } else {
+            let input = $('input[name=' + key + ']');
+            if (input.parent(`dd[data-name=${key}]`).prev('p') !== '') {
+              input.parent(`dd[data-name=${key}]`).prev('p').remove()
+            }
+            input.parent(`dd[data-name=${key}]`).before(`<p class="invalid">${err[key]}</p>`);
+          }
+        });
+      }).fail(function() {
+        alert("error"); //通信失敗時
+      });
+    });
+  </script>
+
 </body>
 
 </html>
