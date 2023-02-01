@@ -13,9 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   $user->registerUser();
 
-  if ($user->getRegisterdState === TRUE) {
+  if ($user->getRegisterdState()) {
     redirect('/customer_list.php?shop_id=' . $_GET['shop_id']);
-
   }
 }
 ?>
