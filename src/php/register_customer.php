@@ -1,5 +1,8 @@
 <?php
 require_once(__DIR__ . '/Class/RegisterCustomer.php');
+require_once(__DIR__ . '/functions.php');
+
+$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
 $last_name = '';
 $first_name = '';
@@ -23,10 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $birthday_date = filter_input(INPUT_POST, 'birthday_date');
   $birthday = $birthday_year . '-' . $birthday_month . '-' . $birthday_date;
   $tel = filter_input(INPUT_POST, 'tel');
+  $information = filter_input(INPUT_POST, 'information');
 
-  $new_customer = new RegisterCustomer($last_name, $first_name, $last_name_kana, $first_name_kana, $gender, $email, $birthday_year, $birthday_month, $birthday_date, $tel);
+  $new_customer = new RegisterCustomer($last_name, $first_name, $last_name_kana, $first_name_kana, $email, $birthday_year, $birthday_month, $birthday_date, $tel, $gender, $information);
 
   $new_customer->registerCustomer();
+
+  if ($new_customer->registered_state) {
+    redirect('customer_detail.php?id=' . $new_customer->last_isert_id);
+  }
 }
 
 ?>
