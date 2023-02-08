@@ -23,22 +23,6 @@ class Customer {
         return $mysql->execute()[0];
     }
 
-    public function fetchCustomerKeepBottle()
-    {
-        $sql = "SELECT k.customer_id as customer_id, b.name, k.bottle_num
-                FROM keep_bottle AS k
-                INNER JOIN bottle AS b
-                ON b.shop_id = k.shop_id
-                AND k.bottle_id = b.id
-                WHERE customer_id = :customer_id";
-
-        $options = ['customer_id' => $this->customer_id];
-
-        $mysql = new ExecuteMySql($sql, $options);
-
-        return $mysql->execute();
-    }
-
     public static function fetchAge($birthday)
     {
         $now = date('Ymd');

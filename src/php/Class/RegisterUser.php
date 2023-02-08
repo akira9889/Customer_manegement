@@ -11,7 +11,7 @@ class RegisterUser
 
     private readonly string $confirm_password;
 
-    private int $admin_state;
+    private ?int $admin_state;
 
     private bool $registered_state;
 
