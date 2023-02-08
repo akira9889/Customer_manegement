@@ -1,7 +1,9 @@
 <?php
+require_once __DIR__ . '/../lib/ExecuteMySql.php';
+
 class CustomerList
 {
-    public const PAGE_COUNT = 10;
+    public const PAGE_COUNT = 100;
 
     public ?int $prev_right;
 
@@ -10,6 +12,7 @@ class CustomerList
     public int $shop_id;
 
     public int $count;
+
 
     public function __construct(int $shop_id, int $count)
     {
@@ -96,5 +99,27 @@ class CustomerList
         $rows = array_reverse($rows);
 
         return $rows;
+    }
+
+    public function fetchVisitHistoriesData($yyyymm)
+    {
+        $sql = "SELECT v.`date`, c.`id`, CONCAT(c.`last_name`, '　', c.`first_name`) as `name`, v.`memo`
+                FROM visit_histories v
+                INNER JOIN customers c
+                ON v.customer_id = c.id
+                WHERE v.`shop_id` = :shop_id
+                AND DATE_FORMAT(`date`, '%Y-%m') = :date
+                ORDER BY v.`date` DESC
+                ";
+
+        $options = [
+            'shop_id' => $this->shop_id,
+            'date' => $yyyymm
+        ];
+
+        $mysql = new ExecuteMySql($sql, $options);
+
+        return $mysql->execute();
+
     }
 }

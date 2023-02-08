@@ -1,3 +1,20 @@
+<?php
+require_once(__DIR__ . '/functions.php');
+require_once(__DIR__ . '/Class/CustomerList.php');
+
+$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
+$yyyymm = filter_input(INPUT_GET, 'date', FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/^[0-9]{4}-[0-9]{2}$/'))) ?: date('Y-m');
+
+$count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
+  'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
+]) ?: CustomerList::PAGE_COUNT;
+
+$customer_data = new CustomerList($shop_id, $count);
+$visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
+// var_dump($yyyymm);
+// exit;
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -34,16 +51,16 @@
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php" class="sidebar-link">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php" class="sidebar-link active">来店履歴一覧</a>
+          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">来店履歴一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
+          <a href="reserve_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">予約一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="register_user.php" class="sidebar-link">設定</a>
+          <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
         </li>
       </ul>
     </div>
@@ -51,128 +68,156 @@
     <div class="main-content">
       <div class="main-head">
         <form class="search-container">
-          <input type="text" placeholder="検索" class="search">
+          <input id="search" name="search_word" type="text" placeholder="検索" class="search">
         </form>
-        <form class="select-container">
-          <select name="select_date" id="select_date" class="select_date">
-            <option value="2022-10">2022 / 10</option>
-            <option value="2022-09">2022 / 09</option>
-            <option value="2022-08">2022 / 08</option>
-            <option value="2022-07">2022 / 07</option>
-            <option value="2022-06">2022 / 06</option>
-            <option value="2022-05">2022 / 05</option>
-            <option value="2022-04">2022 / 04</option>
-            <option value="2022-03">2022 / 03</option>
-            <option value="2022-02">2022 / 02</option>
-            <option value="2022-01">2022 / 01</option>
-            <option value="2022-12">2021 / 12</option>
-            <option value="2022-11">2021 / 11</option>
+        <form class="select-container" method="get">
+          <input type="hidden" name="shop_id" value="<?= $shop_id ?>">
+          <select name="date" id="select_date" class="select_date" onchange="submit(this.form)">
+            <option value="<?= date('Y-m') ?>"><?= date('Y/m') ?></option>
+            <?php for ($i = 1; $i < 12; $i++) : ?>
+              <?php $target_yyyymm = getPrevDate(date('Y-m'), $i) ?>
+              <option value="<?= date('Y-m', strtotime($target_yyyymm)) ?>" <?php if ($yyyymm == date('Y-m', strtotime($target_yyyymm))) echo 'selected' ?>><?= date('Y/m', strtotime($target_yyyymm)) ?></option>
+            <?php endfor; ?>
           </select>
         </form>
       </div>
 
-      <div class="table-wrap">
+      <p class="clusterize-counter customer-table-counter">（<?= count($visit_histories_data) ?>件）</p>
+      <div id="scrollArea" class="table-wrap clusterize-scroll">
         <table class="customer-table visit-history-table">
           <thead>
             <tr>
-              <th>顧客名</th>
               <th>最終来店日</th>
-              <th>メモ</th>
+              <th>顧客名</th>
+              <th>当日メモ</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
-            <tr>
-              <th>鈴木太郎</th>
-              <td>1990-09-09</td>
-              <td class="memo">テキストテキストテキストテキスト</td>
-              <td class="row-link"><a href="customer_detail.php"></a></td>
-            </tr>
+          <tbody id="contentArea" class="clusterize-content">
+            <?php foreach ($visit_histories_data as $customer) : ?>
+              <tr class="clusterize-no-data">
+                <th><?= $customer['date'] ?></th>
+                <td><?= $customer['name'] ?></td>
+                <td class="memo"><?= $customer['memo'] ?></td>
+                <td class="row-link"><a href="customer_detail.php?id=<?= $customer['id'] ?>"></a></td>
+              </tr>
+            <?php endforeach; ?>
           </tbody>
         </table>
       </div>
 
-      <div class="pagenation-inner">
-        <ul class="pagenation-list">
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link prev">&lt;&lt;</a>
-          </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link">1</a>
-          </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link active">2</a>
-          </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link">3</a>
-          </li>
-          <li class="pagenation-item">
-            <a href="#" class="pagenation-link next">&gt;&gt;</a>
-          </li>
-        </ul>
-      </div>
     </div>
   </div>
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.19.0/clusterize.min.js"></script>
+  <script>
+    const search = document.getElementById('search');
+
+    let url = new URL(window.location.href);
+    // URLSearchParamsオブジェクトを取得
+    let params = url.searchParams;
+
+    // getメソッド
+    const shop_id = params.get('shop_id');
+
+    const count = (params.get('count')) ? params.get('count') : 100;
+
+    $(document).on('keyup', 'input', function() {
+      let yyyymm = $('#select_date').val();
+      $.ajax({
+        url: 'ajax_visit_history.php', //データベースを繋げるファイル
+        type: "POST",
+        data: {
+          search_word: $('#search').val(),
+          shop_id: shop_id,
+          yyyymm: yyyymm,
+        },
+        dataType: "json"
+      }).done(function(customers) {
+        console.log(customers)
+        var date = ''
+        var name = ''
+        var kana = ''
+        var tel = ''
+        var email = ''
+        var birthday = ''
+        var information = ''
+        var memo = ''
+
+        var rows = [];
+
+        for (let customer of customers) {
+          rows.push({
+            values: [
+              date, customer['date'],
+              name, customer['last_name'] + customer['first_name'],
+              kana, customer['last_kana'] + customer['first_kana'],
+              tel, customer['tel'],
+              email, customer['email'],
+              birthday, customer['birthday'],
+              information, customer['information'],
+              memo, customer['memo']
+            ],
+            markup: '<tr>' +
+              '<th>' + customer['date'] + '</th>' +
+              '<td>' + customer['name'] + '</td>' +
+              '<td class="memo">' + customer['memo'] + '</td>' +
+              '<td class="row-link"}"><a href="customer_detail.php?id=' + customer['id'] + '"></a></td>' +
+              '</tr>',
+            active: true
+          });
+        }
+
+        var filterRows = function(rows) {
+          var results = [];
+          for (var i = 0, ii = rows.length; i < ii; i++) {
+            if (rows[i].active) results.push(rows[i].markup)
+          }
+          return results;
+        }
+
+        var clusterize = new Clusterize({
+          rows: filterRows(rows),
+          scrollId: 'scrollArea',
+          contentId: 'contentArea',
+        });
+
+        var onSearch = function() {
+          if (search.value !== '') {
+
+            for (var i = 0, ii = rows.length; i < ii; i++) {
+              var suitable = false;
+              for (var j = 0, jj = rows[i].values.length; j < jj; j++) {
+                if (rows[i].values[j].toString().indexOf(search.value) + 1)
+                  suitable = true;
+              }
+              rows[i].active = suitable;
+            }
+          }
+          clusterize.update(filterRows(rows));
+
+          $('p.customer-table-counter').text('（' + clusterize.getRowsAmount() + '件）')
+
+          if (search.value === '') {
+            $('div.pagenation-inner').css({
+              'opacity': '1',
+              'pointer-events': 'auto'
+            });
+          } else {
+            $('div.pagenation-inner').css({
+              'opacity': '0',
+              'pointer-events': 'none'
+            });
+          }
+        }
+
+        onSearch();
+
+      }).fail(function() {
+        alert("error"); //通信失敗時
+      });
+    });
+  </script>
 </body>
 
 </html>
