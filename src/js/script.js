@@ -25,23 +25,22 @@ $(() => {
 
   const editBtn = $('.edit-btn');
 
-  const setInput = () => {
+  const setFormInput = () => {
     $('.customer-form').wrapInner('<form method="post"></form>')
-    var bithdayYear = $('#birthday').text().split('年')[0]
-    var bithdayMonth = $('#birthday').text().split('年')[1].split('月')[0]
-    var bithdayDate = $('#birthday').text().split('年')[1].split('月')[1].split('日')[0]
+    var birthdayYear = $('#birthday').text().split('年')[0]
+    var birthdayMonth = $('#birthday').text().split('年')[1].split('月')[0]
+    var birthdayDate = $('#birthday').text().split('年')[1].split('月')[1].split('日')[0]
 
     $('.input').map(function () {
       var value = $(this).text();
       var name = $(this).data('name');
       var type = $(this).data('type');
       if ($(this).attr('id') === 'birthday') {
-        $(this).html(`<div><input id="birthday_year" type="text" name="birthday_year" value="${bithdayYear}"><span>年</span></div>
-                        <div><input id="birthday_month" type="text" name="birthday_month" value="${bithdayMonth}"><span>月</span></div>
-                        <div><input id="birthday_date" type="text" name="birthday_date" value="${bithdayDate}"><span>日</span></div>
+        $(this).html(`<div><input id="birthday_year" type="text" name="birthday_year" value="${birthdayYear}"><span>年</span></div>
+                        <div><input id="birthday_month" type="text" name="birthday_month" value="${birthdayMonth}"><span>月</span></div>
+                        <div><input id="birthday_date" type="text" name="birthday_date" value="${birthdayDate}"><span>日</span></div>
                       `);
       } else {
-
         if (type === 'textarea') {
           $(this).html(`<textarea name="information" style="min-height:100px;resize: vertical;">${value}</textarea>`);
         } else {
@@ -56,10 +55,11 @@ $(() => {
     })
   }
 
-  editBtn.on('click load', () => {
-    if (editBtn.children('button').attr('type') == 'button') {
-      setInput();
+  editBtn.click(() => {
+    if (editBtn.children('button').attr('type') === 'button') {
+      setFormInput();
       return false;
     }
-  });
+  })
+
 });
