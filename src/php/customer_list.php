@@ -5,13 +5,15 @@ require_once(__DIR__ . '/Class/CustomerList.php');
 
 session_start();
 
+$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
 $sql = "SELECT company_id
         FROM shops
         WHERE id = :shop_id
         LIMIT 1";
 
 $options = [
-  'shop_id' => (int) $_GET['shop_id']
+  'shop_id' => $shop_id
 ];
 
 $mysql = new ExecuteMySql($sql, $options);
@@ -20,12 +22,10 @@ if (!empty($mysql->execute()[0])) {
   $company_id = $mysql->execute()[0];
 }
 
-if (!(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === (int) $_GET['shop_id'])) && !(isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === RegisterCompany::OWNER && isset($company_id['company_id']) && $company_id['company_id'] === $_SESSION['USER']['id'])) {
+if (!(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) && !(isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === RegisterCompany::OWNER && isset($company_id['company_id']) && $company_id['company_id'] === $_SESSION['USER']['id'])) {
   //ログインされていない場合はログイン画面へ
-  redirect('/shop_login.php?shop_id=' . $_GET['shop_id']);
+  redirect('/shop_login.php?shop_id=' . $shop_id);
 }
-
-$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
 $left = filter_input(INPUT_GET, 'left', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1],
@@ -37,9 +37,9 @@ $right = filter_input(INPUT_GET, 'right', FILTER_VALIDATE_INT, [
 
 $count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
-]) ?: 10;
+]) ?: 100;
 
-$customer_data = new CustomerList( (int) $shop_id, $count);
+$customer_data = new CustomerList($shop_id, $count);
 
 if (is_int($left)) {
   $customer_list = $customer_data->fetchNextCustomerList($left);
@@ -103,14 +103,15 @@ if (is_int($left)) {
     <div class="main-content">
       <div class="main-head">
         <form class="search-container">
-          <input type="text" placeholder="検索" class="search">
+          <input id="search" name="search_word" type="text" placeholder="検索" class="search">
         </form>
         <div class="adding-btn">
-          <a href="register_customer.php?shop_id=<?= (int) $_GET['shop_id'] ?>">顧客新規作成<span>＋</span></a>
+          <a href="register_customer.php?shop_id=<?= $shop_id ?>">顧客新規作成<span>＋</span></a>
         </div>
       </div>
 
-      <div class="table-wrap">
+      <p class="clusterize-counter customer-table-counter">（<?= count($customer_list) ?>件）</p>
+      <div id="scrollArea" class="table-wrap clusterize-scroll">
         <table class="customer-table">
           <thead>
             <tr>
@@ -120,38 +121,168 @@ if (is_int($left)) {
               <th>生年月日</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="contentArea" class="clusterize-content">
             <?php foreach ($customer_list as $customer) : ?>
-              <tr>
+              <tr class="clusterize-no-data">
                 <th class="name"><?= $customer['last_name'] . '&nbsp;' . $customer['first_name'] ?></th>
                 <td><?= $customer['tel'] ?></td>
                 <td><?= $customer['email'] ?></td>
                 <td><?= $customer['birthday'] ?></td>
-                <td class="row-link"><a href="customer_detail.php?id=<?= $customer['id'] ?>"></a></td>
+                <td class="row-link" data-id="id=<?= $customer['id'] ?>"><a href="customer_detail.php?id=<?= $customer['id'] ?>"></a></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
       </div>
 
-      <?php if ($customer_list): ?>
-      <div class="pagenation-inner">
-        <ul class="pagenation-list">
-          <?php if ($customer_data->prev_right !== null): ?>
-          <li class="pagenation-item">
-            <a href="<?= h("?shop_id=$shop_id&right=$customer_data->prev_right&count=$count") ?>" class="pagenation-link prev">&lt;&lt;</a>
-          </li>
-          <?php endif; ?>
-          <?php if ($customer_data->next_left !== null): ?>
-          <li class="pagenation-item">
-            <a href="<?=h("?shop_id=$shop_id&left=$customer_data->next_left&count=$count")?>" class="pagenation-link next">&gt;&gt;</a>
-          </li>
-          <?php endif; ?>
-        </ul>
-      </div>
+      <?php if ($customer_list) : ?>
+        <div class="pagenation-inner">
+          <ul class="pagenation-list">
+            <?php if ($customer_data->prev_right !== null) : ?>
+              <li class="pagenation-item">
+                <a href="<?= h("?shop_id=$shop_id&right=$customer_data->prev_right&count=$count") ?>" class="pagenation-link prev">&lt;&lt;</a>
+              </li>
+            <?php endif; ?>
+            <?php if ($customer_data->next_left !== null) : ?>
+              <li class="pagenation-item">
+                <a href="<?= h("?shop_id=$shop_id&left=$customer_data->next_left&count=$count") ?>" class="pagenation-link next">&gt;&gt;</a>
+              </li>
+            <?php endif; ?>
+          </ul>
+        </div>
       <?php endif; ?>
     </div>
   </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.19.0/clusterize.min.js"></script>
+  <script src="/js/script.js"></script>
+  <script>
+    $(function() {
+      $('input').keydown(function(e) {
+        if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+    });
+    
+    let url = new URL(window.location.href);
+    // URLSearchParamsオブジェクトを取得
+    let params = url.searchParams;
+
+    // getメソッド
+    const shop_id = params.get('shop_id');
+
+    const count = (params.get('count')) ? params.get('count') : 100;
+
+    $(document).on('keyup', 'input', function() {
+      let left = null;
+      let right = null;
+      if (search.value === '') {
+        let left = null;
+        let right = null;
+      }
+      $.ajax({
+        url: 'ajax_search.php', //データベースを繋げるファイル
+        type: "POST",
+        data: {
+          search_word: $('input[name=search_word]').val(),
+          shop_id: shop_id,
+          left: left,
+          right: right,
+          count: count
+        },
+        dataType: "json"
+      }).done(function(customers) {
+        console.log(customers)
+        var last_name = ''
+        var first_name = ''
+        var name = ''
+        var last_kana = ''
+        var first_kana = ''
+        var kana = ''
+        var tel = ''
+        var email = ''
+        var birthday = ''
+        var information = ''
+
+        var rows = [],
+          search = document.getElementById('search');
+
+        for (let customer of customers) {
+          rows.push({
+            values: [
+              name, customer['last_name'] + customer['first_name'],
+              kana, customer['last_kana'] + customer['first_kana'],
+              tel, customer['tel'],
+              email, customer['email'],
+              birthday, customer['birthday'],
+              information, customer['information']
+            ],
+            markup: '<tr>' +
+              '<th class="name">' + customer['last_name'] + '&nbsp;' + customer['first_name'] + '</th>' +
+              '<td>' + customer['tel'] + '</td>' +
+              '<td>' + customer['email'] + '</td>' +
+              '<td>' + customer['birthday'] + '</td>' +
+              '<td class="row-link"}"><a href="customer_detail.php?id=' + customer['id'] + '"></a></td>' +
+              '</tr>',
+            active: true
+          });
+        }
+
+        var filterRows = function(rows) {
+          var results = [];
+          for (var i = 0, ii = rows.length; i < ii; i++) {
+            if (rows[i].active) results.push(rows[i].markup)
+          }
+          return results;
+        }
+
+        var clusterize = new Clusterize({
+          rows: filterRows(rows),
+          scrollId: 'scrollArea',
+          contentId: 'contentArea',
+        });
+
+        var onSearch = function() {
+          if (search.value !== '') {
+
+            for (var i = 0, ii = rows.length; i < ii; i++) {
+              var suitable = false;
+              for (var j = 0, jj = rows[i].values.length; j < jj; j++) {
+                if (rows[i].values[j].toString().indexOf(search.value) + 1)
+                  suitable = true;
+              }
+              rows[i].active = suitable;
+            }
+          }
+          clusterize.update(filterRows(rows));
+
+          $('p.customer-table-counter').text('（' + clusterize.getRowsAmount() + '件）')
+
+
+          if (search.value === '') {
+            $('div.pagenation-inner').css({
+              'opacity': '1',
+              'pointer-events': 'auto'
+            });
+          } else {
+            $('div.pagenation-inner').css({
+              'opacity': '0',
+              'pointer-events': 'none'
+            });
+          }
+        }
+
+        onSearch();
+
+      }).fail(function() {
+        alert("error"); //通信失敗時
+      });
+    });
+  </script>
 
 </body>
 
