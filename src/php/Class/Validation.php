@@ -26,7 +26,7 @@ final class Validation
         } elseif (!$this->isJapaneseString($first_name) || !$this->isJapaneseString($last_name)) {
             $this->err['name'] = '名前は日本語で入力してください。';
         } else {
-            $this->err['name'] = '';
+            $this->err['name'] = NULL;
         }
     }
 
@@ -37,7 +37,7 @@ final class Validation
         } elseif (!$this->isKanaString($first_kana) || !$this->isKanaString($last_kana)) {
             $this->err['kana'] = 'カタカナで入力してください。';
         } else {
-            $this->err['kana'] = '';
+            $this->err['kana'] = NULL;
         }
     }
 
@@ -48,7 +48,7 @@ final class Validation
         } elseif (!preg_match('/\A19[0-9]{2}|[2-9][0-9]{3}\z/u', $year) || !preg_match('/\A(0[1-9]{1}|1[0-2]{1})\z/u', $month) || !preg_match('/\A(0[1-9]{1}|[1-2]{1}[0-9]{1}|3[0-1]{1})\z/u', $date)) {
             $this->err['birthday'] = '生年月日が正しくありません。';
         } else {
-            $this->err['birthday'] = '';
+            $this->err['birthday'] = NULL;
         }
     }
 
@@ -58,7 +58,7 @@ final class Validation
         } elseif (!preg_match('/\A[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}\z/u', $input)) {
             $this->err['email'] = 'メールアドレスが不正です。';
         } else {
-            $this->err['email'] = '';
+            $this->err['email'] = NULL;
         }
     }
 
@@ -69,7 +69,7 @@ final class Validation
         } elseif (!preg_match('/\A0\d{9,10}\z/u', $input)) {
             $this->err['tel'] = '電話番号が正しくありません。';
         } else {
-            $this->err['tel'] = '';
+            $this->err['tel'] = NULL;
         }
     }
 }

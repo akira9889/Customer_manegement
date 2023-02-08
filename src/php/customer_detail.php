@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $visit_history_data = $customer->fetchCustomerHistoriesData();
 
-$keep_bottles = $customer->fetchCustomerKeepBottle();
 ?>
 <!doctype html>
 <html lang="ja">
@@ -195,9 +194,9 @@ $keep_bottles = $customer->fetchCustomerKeepBottle();
 
   <script src="/js/script.js"></script>
   <script>
-    $(document).on('focusout', 'input', function() {
+    $(document).on('focusout', '.customer-form input', function() {
       $.ajax({
-        url: 'ajax_input_change.php', //データベースを繋げるファイル
+        url: 'ajax_input_change.php',
         type: "POST",
         data: {
           first_name: $('input[name=first_name]').val(),
@@ -213,23 +212,31 @@ $keep_bottles = $customer->fetchCustomerKeepBottle();
         dataType: "json"
       }).done(function(err) {
         Object.keys(err).forEach(key => {
-          // console.log(err);
-          if (key === 'name' || key === 'kana') {
-            $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
-            $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
-          } else if (key === 'birthday') {
-            $('#birthday').prev().remove()
-            $('#birthday').before(`<p class="invalid">${err[key]}</p>`)
-          } else {
-            let input = $('input[name=' + key + ']');
-            if (input.parent(`dd[data-name=${key}]`).prev('p') !== '') {
+          //バリデーションエラー時
+          if (err[key]) {
+            if (key === 'name' || key === 'kana') {
+              $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
+            } else if (key === 'birthday') {
+              $('#birthday').before(`<p class="invalid">${err[key]}</p>`)
+            } else {
+              let input = $('input[name=' + key + ']');
+              input.parent(`dd[data-name=${key}]`).before(`<p class="invalid">${err[key]}</p>`);
+            }
+          }
+          //バリデーションエラーがない時
+          else {
+            if (key === 'name' || key === 'kana') {
+              $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
+            } else if (key === 'birthday') {
+              $('#birthday').prev('p').remove()
+            } else {
+              let input = $('input[name=' + key + ']');
               input.parent(`dd[data-name=${key}]`).prev('p').remove()
             }
-            input.parent(`dd[data-name=${key}]`).before(`<p class="invalid">${err[key]}</p>`);
           }
         });
       }).fail(function() {
-        alert("error"); //通信失敗時
+        alert("error");
       });
     });
   </script>
