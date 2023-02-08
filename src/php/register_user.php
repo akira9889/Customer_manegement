@@ -1,20 +1,23 @@
 <?php
 require_once(__DIR__ . '/Class/RegisterUser.php');
+require_once(__DIR__ . '/functions.php');
 
 $name = '';
+$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $name = filter_input(INPUT_POST, 'name');
   $password = filter_input(INPUT_POST, 'password');
   $confirm_password = filter_input(INPUT_POST, 'confirm_password');
-  $admin_state = filter_input(INPUT_POST, 'admin_state');
+  $admin_state = filter_input(INPUT_POST, 'admin_state', FILTER_VALIDATE_INT);
 
   $user = new RegisterUser($name, $password, $confirm_password, $admin_state);
 
   $user->registerUser();
 
   if ($user->getRegisterdState()) {
-    redirect('/customer_list.php?shop_id=' . $_GET['shop_id']);
+    redirect('/customer_list.php?shop_id=' . $shop_id);
   }
 }
 ?>
@@ -54,16 +57,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link active">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">来店履歴一覧</a>
+          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="reserve_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">予約一覧</a>
+          <a href="reserve_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">予約一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="register_user.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">設定</a>
+          <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">設定</a>
         </li>
       </ul>
     </div>
@@ -77,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <li class="register-item">
               <label for="last-name">ユーザ名</label>
               <div class="register-input">
-                <input type="text" name="name" placeholder="ユーザ名" value="<?=  $name ?>">
+                <input type="text" name="name" placeholder="ユーザ名" value="<?= $name ?>">
               </div>
               <p class="invalid"><?php if (isset($user->err['name'])) echo $user->err['name'] ?></p>
             </li>
@@ -89,14 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               <p class="invalid"><?php if (isset($user->err['password'])) echo $user->err['password'] ?></p>
             </li>
             <li class=" register-item">
-                <label for="last-name">パスワード確認</label>
+              <label for="last-name">パスワード確認</label>
               <div class="register-input">
                 <input type="text" name="confirm_password" placeholder="パスワード確認">
               </div>
               <p class="invalid"><?php if (isset($user->err['confirm_password'])) echo $user->err['confirm_password'] ?></p>
             </li>
             <li class=" register-item register-item__admin">
-                <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state"><span></span></label>
+              <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state"><span></span></label>
               <p>(ユーザーの追加や削除、顧客関連の情報を追加、編集することができます。)</p>
               <!-- <div class="register-input register-input__check">
 

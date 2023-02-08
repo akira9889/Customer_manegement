@@ -33,7 +33,7 @@ final class ExecuteMySql extends Connection {
         $stmt = $this->pdo->prepare($this->query);
 
         foreach($this->options as $option_key => &$option_value) {
-            $stmt->bindParam(":$option_key", $option_value, $this->chackType($option_value));
+            $stmt->bindParam(":$option_key", $option_value, $this->checkType($option_value));
         }
 
         $stmt->execute();
@@ -41,7 +41,7 @@ final class ExecuteMySql extends Connection {
         $this->result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    private function chackType($option_value) {
+    private function checkType($option_value) {
         if (gettype($option_value) === "NULL") return PDO::PARAM_NULL;
         if (gettype($option_value) === "integer") return PDO::PARAM_INT;
         if (gettype($option_value) === "string")  return PDO::PARAM_STR;
