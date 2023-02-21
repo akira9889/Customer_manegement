@@ -2,18 +2,22 @@
 
 require_once(__DIR__ . '/functions.php');
 require_once(__DIR__ . '/Class/Login.php');
+require_once(__DIR__ . '/Class/RegisterCompany.php');
 
 session_start();
 
-if (isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === 1 && $_SESSION['USER']['id'] === (int) $_GET['company_id']) {
-    redirect('/shop_list.php' . '?company_id=' . $_GET['id']);
+//ログイン済みの場合、店舗一覧ページに遷移
+if (isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER) {
+    redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
 }
 
 $name = '';
 $password = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
+    $name = filter_input(INPUT_POST, 'name');
+
+    $password = $_POST['password'];
     $password = $_POST['password'];
 
     $company = new Login($name, $password, 'companies');

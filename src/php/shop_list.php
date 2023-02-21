@@ -4,12 +4,11 @@ require_once(__DIR__ . '/Class/ShopList.php');
 
 session_start();
 
-$company_id = (int) $_GET['company_id'];
+$company_id = filter_input(INPUT_GET, 'company_id', FILTER_VALIDATE_INT);
 
 //ログインされていない場合はログイン画面へ
-
-if (!isset($_SESSION['USER']['admin']) || $_SESSION['USER']['admin'] !== 1 || $_SESSION['USER']['id'] !== $company_id) {
-        redirect('/login.php?company_id=' . $company_id);
+if (!isset($_SESSION['USER']['admin_state']) || $_SESSION['USER']['admin_state'] !== 1 || $_SESSION['USER']['id'] !== $company_id) {
+        redirect('/login.php');
 }
 
 $shops = new ShopList($company_id);
@@ -59,12 +58,11 @@ $shops = new ShopList($company_id);
             </ul>
         </div>
 
+        <?php if(count($shops->listShops())): ?>
         <div class="main-content">
             <div class="main-inner">
                 <?php
                 $group_by_prefectures = group_by($shops->listShops(), 'prefecture');
-                // var_dump($group_by_prefectures);
-                // exit;
                 $prefectures = array_keys($group_by_prefectures);
                 for ($i = 0; $i < count($group_by_prefectures); $i++):
                 ?>
@@ -77,7 +75,7 @@ $shops = new ShopList($company_id);
                 <ul class="shop-list">
                     <?php
                     foreach ($group_by_prefectures[$prefecture] as $shop):
-                    $url = '/shop_login.php?shop_id=' . $shop['id'];
+                    $url = '/shop_login.php?shop_id=' . $shop['shop_id'];
                     ?>
                     <li class="shop-item">
                         <a class="shop-link" href="<?= $url ?>">
@@ -89,7 +87,7 @@ $shops = new ShopList($company_id);
                 <?php endfor; ?>
             </div>
         </div>
-
+        <?php endif; ?>
 </body>
 
 </html>

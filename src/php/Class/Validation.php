@@ -21,6 +21,7 @@ final class Validation
 
     public function checkNameFormat($first_name, $last_name)
     {
+        if (isset($this->getErrors()['']))
         if (!$first_name || !$last_name) {
             $this->err['name'] = '名前を入力してください。';
         } elseif (!$this->isJapaneseString($first_name) || !$this->isJapaneseString($last_name)) {
@@ -28,6 +29,11 @@ final class Validation
         } else {
             $this->err['name'] = NULL;
         }
+    }
+
+    public function getErrors()
+    {
+        return $this->err;
     }
 
     public function checkKanaFormat($first_kana, $last_kana)
@@ -41,12 +47,12 @@ final class Validation
         }
     }
 
-    public function checkBirthdayFormat($year, $month, $date)
+    public function checkDateFormat($year, $month, $date)
     {
         if (!$year || !$month || !$date) {
-            $this->err['birthday'] = '生年月日を入力してください。';
+            $this->err['birthday'] = '日付を入力してください。';
         } elseif (!preg_match('/\A19[0-9]{2}|[2-9][0-9]{3}\z/u', $year) || !preg_match('/\A(0[1-9]{1}|1[0-2]{1})\z/u', $month) || !preg_match('/\A(0[1-9]{1}|[1-2]{1}[0-9]{1}|3[0-1]{1})\z/u', $date)) {
-            $this->err['birthday'] = '生年月日が正しくありません。';
+            $this->err['birthday'] = '日付が正しくありません。';
         } else {
             $this->err['birthday'] = NULL;
         }

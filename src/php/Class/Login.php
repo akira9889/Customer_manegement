@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
+require_once __DIR__ . '/RegisterCompany.php';
 
 class Login
 {
@@ -23,7 +24,7 @@ class Login
     {
         $sql = "SELECT *
                 FROM {$this->table_name}
-                WHERE name = :name
+                WHERE `name` = :name
                 LIMIT 1";
 
         $options = [
@@ -32,9 +33,7 @@ class Login
 
         $mysql = new ExecuteMySql($sql, $options);
 
-        if(!empty($mysql->execute()[0])) {
-            return $mysql->execute()[0];
-        }
+        return $mysql->execute()[0] ?? null;
     }
 
     public function check_login()
@@ -49,7 +48,7 @@ class Login
 
         if ($user && $this->password === $user['password']) {
             $_SESSION['USER'] = $user;
-            $_SESSION['USER']['admin'] = 1;
+            $_SESSION['USER']['admin_state'] = RegisterCompany::OWNER;
             return TRUE;
         } else {
             return FALSE;

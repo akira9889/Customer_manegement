@@ -3,7 +3,7 @@ require_once __DIR__ . '/../lib/ExecuteMySql.php';
 
 class RegisterUser
 {
-    private const STORE_MANEGER = 2;
+    public const STORE_MANEGER = 2;
 
     private readonly string $name;
 
@@ -50,8 +50,6 @@ class RegisterUser
 
             $mysql->execute();
 
-            $_SESSION['USER'] = $this->fetchUser();
-            $_SESSION['USER']['admin'] = self::STORE_MANEGER;
             $this->registered_state = TRUE;
         }
     }

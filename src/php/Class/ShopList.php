@@ -10,12 +10,12 @@ final class ShopList {
     }
 
     public function listShops() {
-        $sql = "SELECT shops.id, shops.company_id, prefectures.id AS prefecture_id, prefectures.name AS prefecture, shops.area
+        $sql = "SELECT shops.id AS shop_id, shops.company_id, prefectures.id AS prefecture_id, prefectures.name AS prefecture, shops.area
                 FROM shops
                 INNER JOIN prefectures
                 ON shops.prefecture_id = prefectures.id
                 WHERE company_id = :company_id
-                ORDER BY prefecture_id ASC";
+                ORDER BY prefecture_id ASC, shop_id ASC";
 
         $options = [
             'company_id' => $this->company_id

@@ -6,24 +6,29 @@ require_once(__DIR__ . '/Class/ShopLogin.php');
 
 session_start();
 
-$sql = "SELECT company_id
-        FROM shops
-        WHERE id = :shop_id
+$shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
+$sql = "SELECT s.company_id, c.name
+        FROM shops s
+        INNER JOIN companies c
+        ON s.company_id = c.id
+        WHERE s.id = :shop_id
         LIMIT 1";
 
 $options = [
-    'shop_id' => (int) $_GET['shop_id']
+    'shop_id' => $shop_id
 ];
 
 $mysql = new ExecuteMySql($sql, $options);
 
-$company_id = 0;
 if (!empty($mysql->execute()[0])) {
-    $company_id = $mysql->execute()[0];
+    $shop = $mysql->execute()[0];
+} else {
+    throw new Exception('店舗IDが取得出来ない', 404);
 }
 
-if ((isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === (int) $_GET['shop_id']) || (isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === RegisterCompany::OWNER && isset($company_id['company_id']) && $company_id['company_id'] === $_SESSION['USER']['id'])) {
-    redirect('/customer_list.php?shop_id=' . $_GET['shop_id']);
+if ((isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id) || (isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])) {
+    redirect('/customer_list.php?shop_id=' . $shop_id);
 }
 
 $name = '';
@@ -61,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <header class="header">
         <div class="header-inner">
             <div class="header-content">
-                <h1 class="header-logo">Sample shop</h1>
+                <h1 class="header-logo"><?php if(isset($shop['name'])) echo $shop['name'] ?></h1>
             </div>
         </div>
     </header>

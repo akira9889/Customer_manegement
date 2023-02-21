@@ -1,15 +1,18 @@
 <?php
 require_once(__DIR__ . '/functions.php');
 require_once(__DIR__ . '/Class/RegisterCompany.php');
+require_once(__DIR__ . '/Class/RegisterUser.php');
 require_once(__DIR__ . '/Class/CustomerList.php');
 
 session_start();
 
 $shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
-$sql = "SELECT company_id
-        FROM shops
-        WHERE id = :shop_id
+$sql = "SELECT s.`company_id`, c.`name`, s.`area`
+        FROM shops s
+        INNER JOIN companies c
+        ON s.`company_id` = c.`id`
+        WHERE s.`id` = :shop_id
         LIMIT 1";
 
 $options = [
@@ -18,12 +21,13 @@ $options = [
 
 $mysql = new ExecuteMySql($sql, $options);
 
-if (!empty($mysql->execute()[0])) {
-  $company_id = $mysql->execute()[0];
-}
+$shop = $mysql->execute()[0] ?? null;
 
-if (!(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) && !(isset($_SESSION['USER']['admin']) && $_SESSION['USER']['admin'] === RegisterCompany::OWNER && isset($company_id['company_id']) && $company_id['company_id'] === $_SESSION['USER']['id'])) {
-  //ログインされていない場合はログイン画面へ
+//未ログインの時はログイン画面へ遷移
+if (
+  !(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) &&
+  !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
+) {
   redirect('/shop_login.php?shop_id=' . $shop_id);
 }
 
@@ -36,8 +40,12 @@ $right = filter_input(INPUT_GET, 'right', FILTER_VALIDATE_INT, [
 ]);
 
 $count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
-  'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
-]) ?: 100;
+  'options' => [
+    'default' => 100,
+    'min_range' => 1,
+    'max_range' => CustomerList::PAGE_COUNT
+  ],
+]);
 
 $customer_data = new CustomerList($shop_id, $count);
 
@@ -49,6 +57,7 @@ if (is_int($left)) {
   $customer_list = $customer_data->fetchCustomerList();
 }
 
+$admin_state = $_SESSION['USER']['admin_state'] ?? null;
 ?>
 <!doctype html>
 <html lang="ja">
@@ -71,7 +80,7 @@ if (is_int($left)) {
   <header class="header">
     <div class="header-inner">
       <div class="header-content">
-        <h1 class="header-logo">Sample shop</h1>
+        <h1 class="header-logo"><?= $shop['name'] . '  ' . $shop['area'] ?></h1>
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
@@ -86,17 +95,16 @@ if (is_int($left)) {
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link active">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">来店履歴一覧</a>
+          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
-        <li class="sidebar-item">
-          <a href="reserve_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">予約一覧</a>
-        </li>
-        <li class="sidebar-item">
-          <a href="register_user.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">設定</a>
-        </li>
+        <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
+          <li class="sidebar-item">
+            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
+          </li>
+        <?php endif; ?>
       </ul>
     </div>
 
@@ -167,7 +175,7 @@ if (is_int($left)) {
         }
       });
     });
-    
+
     let url = new URL(window.location.href);
     // URLSearchParamsオブジェクトを取得
     let params = url.searchParams;
@@ -196,7 +204,6 @@ if (is_int($left)) {
         },
         dataType: "json"
       }).done(function(customers) {
-        console.log(customers)
         var last_name = ''
         var first_name = ''
         var name = ''
@@ -248,7 +255,6 @@ if (is_int($left)) {
 
         var onSearch = function() {
           if (search.value !== '') {
-
             for (var i = 0, ii = rows.length; i < ii; i++) {
               var suitable = false;
               for (var j = 0, jj = rows[i].values.length; j < jj; j++) {
@@ -261,7 +267,6 @@ if (is_int($left)) {
           clusterize.update(filterRows(rows));
 
           $('p.customer-table-counter').text('（' + clusterize.getRowsAmount() + '件）')
-
 
           if (search.value === '') {
             $('div.pagenation-inner').css({

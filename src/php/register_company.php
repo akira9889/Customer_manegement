@@ -4,18 +4,19 @@ require_once(__DIR__ . '/Class/RegisterCompany.php');
 
 session_start();
 
-$name = '';
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name');
-    $password = filter_input(INPUT_POST, 'password');
-    $confirm_password = filter_input(INPUT_POST, 'confirm_password');
 
-    $company = new RegisterCompany($name, $password, $confirm_password);
+    $company_login_data = filter_input_array(INPUT_POST, [
+        'name' =>  FILTER_DEFAULT,
+        'password' =>  FILTER_DEFAULT,
+        'confirm_password' =>  FILTER_DEFAULT
+    ]);
 
-    if ($company->registerUser()) {
-        redirect('/shop_list.php?company_id=' . $company->fetchUser()['id']);
-    }
+    $company = new RegisterCompany($company_login_data);
+
+    $company->registerUser();
+
+    $errors = $company->getErrors();
 }
 ?>
 <!doctype html>
@@ -32,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Original CSS -->
     <link href="/css/style.css" rel="stylesheet" type="text/css">
 
-    <title>管理者登録</title>
+    <title>会社登録</title>
 </head>
 
 <body class="register_user">
@@ -53,30 +54,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <li class="register-item">
                         <label for="last-name">会社名</label>
                         <div class="register-input">
-                            <input type="text" name="name" placeholder="会社名" value="<?= $name ?>">
+                            <input type="text" name="name" placeholder="会社名" value="<?= $company_login_data['name'] ?? null ?>">
                         </div>
-                        <p class="invalid"><?php if (isset($company->err['name'])) echo $company->err['name'] ?></p>
+                        <p class="invalid"><?= $errors['company_name'] ?? null?></p>
                     </li>
                     <li class="register-item">
                         <label for="last-name">パスワード</label>
                         <div class="register-input">
                             <input type="text" name="password" placeholder="パスワード">
                         </div>
-                        <p class="invalid"><?php if (isset($company->err['password'])) echo $company->err['password'] ?></p>
+                        <p class="invalid"><?= $errors['password']  ?? null?></p>
                     </li>
                     <li class="register-item">
                         <label for="last-name">パスワード確認</label>
                         <div class="register-input">
                             <input type="text" name="confirm_password" placeholder="パスワード確認">
                         </div>
-                        <p class="invalid"><?php if (isset($company->err['confirm_password'])) echo $company->err['confirm_password'] ?></p>
+                        <p class="invalid"><?= $errors['confirm_password']  ?? null?></p>
                     </li>
                     <div class="register-btn">
                         <button type="submit">登録</button>
                     </div>
             </form>
+            <a class="return-login" href="login.php">ログイン画面へ戻る<span>→</span></a>
         </div>
-    </div>
     </div>
 
 </body>

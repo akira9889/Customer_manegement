@@ -1,13 +1,15 @@
 <?php
 require_once('functions.php');
+require_once(__DIR__ . '/Class/RegisterCompany.php');
+
 
 session_start();
 
-if (isset($_SESSION['USER']['admin'])) {
-    $redirect_url = '/login.php?company_id=' . $_SESSION['USER']['id'];
+if ($_SESSION['USER']['admin_state'] === RegisterCompany::OWNER) {
+    $redirect_url = '/login.php';
     sessionDestroy();
     redirect($redirect_url);
-} elseif(isset($_SESSION['USER'])) {
+} elseif($_SESSION['USER']['admin_state'] !== RegisterCompany::OWNER) {
     $redirect_url = '/shop_login.php?shop_id=' . $_SESSION['USER']['shop_id'];
     sessionDestroy();
     redirect($redirect_url);

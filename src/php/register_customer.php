@@ -1,18 +1,45 @@
 <?php
 require_once(__DIR__ . '/Class/RegisterCustomer.php');
+require_once(__DIR__ . '/Class/RegisterCompany.php');
+require_once(__DIR__ . '/Class/RegisterUser.php');
 require_once(__DIR__ . '/functions.php');
+
+session_start();
 
 $shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
-$last_name = '';
-$first_name = '';
-$last_name_kana = '';
-$first_name_kana = '';
-$email = '';
-$birthday_year = '';
-$birthday_month = '';
-$birthday_date = '';
-$tel = '';
+$sql = "SELECT s.`company_id`, c.`name`, s.`area`
+        FROM shops s
+        INNER JOIN companies c
+        ON s.`company_id` = c.`id`
+        WHERE s.`id` = :shop_id
+        LIMIT 1";
+
+$options = [
+  'shop_id' => $shop_id
+];
+
+$mysql = new ExecuteMySql($sql, $options);
+
+$shop = $mysql->execute()[0] ?? null;
+
+//ログインされていない場合はログイン画面へ
+if (
+  !(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) &&
+  !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
+) {
+  redirect('/shop_login.php?shop_id=' . $shop_id);
+}
+
+// $last_name = '';
+// $first_name = '';
+// $last_name_kana = '';
+// $first_name_kana = '';
+// $email = '';
+// $birthday_year = '';
+// $birthday_month = '';
+// $birthday_date = '';
+// $tel = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $last_name = filter_input(INPUT_POST, 'last-name');
@@ -36,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('customer_detail.php?id=' . $new_customer->last_isert_id);
   }
 }
-
+$admin_state = $_SESSION['USER']['admin_state'] ?? null;
 ?>
 <!doctype html>
 <html lang="ja">
@@ -59,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <header class="header">
     <div class="header-inner">
       <div class="header-content">
-        <h1 class="header-logo">Sample shop</h1>
+        <h1 class="header-logo"><?= $shop['name'] . '  ' . $shop['area'] ?></h1>
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
@@ -74,17 +101,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php?shop_id=<?= $_GET['shop_id'] ?>" class="sidebar-link">顧客情報一覧</a>
+          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php" class="sidebar-link active2">来店履歴一覧</a>
+          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link active2">来店履歴一覧</a>
         </li>
-        <li class="sidebar-item">
-          <a href="reserve_list.php" class="sidebar-link">予約一覧</a>
-        </li>
-        <li class="sidebar-item">
-          <a href="register_user.php" class="sidebar-link">設定</a>
-        </li>
+        <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
+          <li class="sidebar-item">
+            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
+          </li>
+        <?php endif; ?>
       </ul>
     </div>
 
@@ -97,10 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li class="register-item">
               <label for="last-name">氏名</label>
               <div class="register-input">
-                <input type="text" name="last-name" placeholder="姓" value="<?= $last_name ?>">
-                <input type="text" name="first-name" placeholder="名" value="<?= $first_name ?>">
+                <input type="text" name="last-name" placeholder="姓" value="<?= $last_name ?? null ?>">
+                <input type="text" name="first-name" placeholder="名" value="<?= $first_name ?? null ?>">
               </div>
-              <p class="invalid"><?php if (isset($new_customer->err['name'])) echo $new_customer->err['name'] ?></p>
+              <p class="invalid"><?= $new_customer->err['name'] ?? null ?></p>
             </li>
             <li class="register-item">
               <label for="last-name">フリガナ</label>
@@ -108,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" name="last-name-kana" placeholder="セイ">
                 <input type="text" name="first-name-kana" placeholder="メイ">
               </div>
-              <p class="invalid"><?php if (isset($new_customer->err['kana'])) echo $new_customer->err['kana'] ?></p>
+              <p class="invalid"><?= $new_customer->err['kana'] ?? null ?></p>
             </li>
 
             <li class="register-item">
@@ -123,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <span></span>
                 </label>
               </div>
-              <p class="invalid"><?php if (isset($new_customer->err['gender'])) echo $new_customer->err['gender'] ?></p>
+              <p class="invalid"><?= $new_customer->err['gender'] ?? null ?></p>
             </li>
 
             <li class="register-item">
@@ -131,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="register-input">
                 <input type="text" name="email" placeholder="メールアドレス">
               </div>
-              <p class="invalid"><?php if (isset($new_customer->err['email'])) echo $new_customer->err['email'] ?></p>
+              <p class="invalid"><?= $new_customer->err['email'] ?? null ?></p>
             </li>
 
             <li class="register-item">
@@ -139,29 +165,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p class="birthday-example">例: <strong>1960</strong><span>年</span><strong>09</strong><span>月</span><strong>03</strong><span>日</span></p>
               <div class="register-input">
                 <div class="register-input-birthday">
-                  <input type="text" name="birthday_year" placeholder="1960" value="<?= $birthday_year ?>">
+                  <input type="text" name="birthday_year" placeholder="1960" value="<?= $birthday_year ?? null ?>">
                   <label for="">年</label>
                 </div>
 
                 <div class="register-input-birthday">
-                  <input type="text" name="birthday_month" placeholder="09" value="<?= $birthday_month ?>">
+                  <input type="text" name="birthday_month" placeholder="09" value="<?= $birthday_month ?? null ?>">
                   <label for="">月</label>
                 </div>
 
                 <div class="register-input-birthday">
-                  <input type="text" name="birthday_date" placeholder="03" value="<?= $birthday_date ?>">
+                  <input type="text" name="birthday_date" placeholder="03" value="<?= $birthday_date ?? null ?>">
                   <label for="">日</label>
                 </div>
               </div>
-              <p class="invalid"><?php if (isset($new_customer->err['birthday'])) echo $new_customer->err['birthday'] ?></p>
+              <p class="invalid"><?= $new_customer->err['birthday'] ?? null ?></p>
             </li>
 
             <li class="register-item">
               <label for="email">電話番号</label>
               <div class="register-input">
-                <input type="tel" name="tel" placeholder="0123456789(ハイフン等なし)">
+                <input type="tel" name="tel" placeholder="0123456789(ハイフン等なし)" value="<?= $tel ?? null ?>">
               </div>
-              <p class="invalid"><?php if (isset($new_customer->err['tel'])) echo $new_customer->err['tel'] ?></p>
+              <p class="invalid"><?= $new_customer->err['tel'] ?? null ?></p>
             </li>
           </ul>
 

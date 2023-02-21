@@ -1,47 +1,26 @@
-<!doctype html>
-<html lang="ja">
+<?php
+// require_once(dirname(__FILE__) . '/mapping.php');
+// require_once('functions.php');
+// try {
+// session_start();
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+// $request_path = isset($_REQUEST['path'])? $_REQUEST['path']: '';
 
-    <!-- fontawesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+// // 末尾にスラッシュが付いていない場合は強制的に付ける
+// if (!str_ends_with($request_path, '/')) {
+// $request_path .= '/';
+// }
 
-    <!-- Original CSS -->
-    <link href="/css/style.css" rel="stylesheet" type="text/css">
+// // mapping.phpに従って対象PHPに処理を移譲
+// if (isset($url_list[$request_path])) {
+// // アクセスされたURLのプログラムに処理を移譲
+// include(dirname(__FILE__) . $url_list[$request_path]);
+// } else {
+// // 存在しないパスへのアクセスはエラーページへ
+// throw new Exception('存在しないパスへのアクセス:' . $request_path, 700);
+// }
 
-    <title>顧客予約一覧</title>
-</head>
-
-<body>
-    <header class="header">
-        <div class="header-inner">
-            <div class="header-content">
-                <h1 class="header-logo">Sample shop</h1>
-                <nav id="header-nav" class="header-nav">
-                    <ul id="header-list" class="header-list">
-                        <li class="header-item">
-                            <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
-                        </li>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <div class="content">
-        <div class="sidebar">
-            <ul class="sidebar-list">
-                <li class="sidebar-item">
-                    <a href="shop_list.php" class="sidebar-link">店舗一覧</a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="register_shop.php" class="sidebar-link">店舗追加　＋</a>
-                </li>
-            </ul>
-        </div>
-
-</body>
-
-</html>
+// } catch (Exception $e) {
+// header('Location: /error-404.html');
+// exit;
+// }

@@ -21,7 +21,11 @@ function group_by(array $table, string $key): array
 
 function h($str)
 {
-    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    if ($str) {
+        return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    } else {
+        return null;
+    }
 }
 
 function getPrevDate($target_date = NULL, $term = 1)
@@ -37,4 +41,22 @@ function getPrevDate($target_date = NULL, $term = 1)
     } else {
         return $prev_date;
     }
+}
+
+/**
+   * 数字のみ抽出する
+   *
+   * @param string ソース文字列
+   * @return string 抽出した数値
+   */
+function extractNumber(string $num)
+{
+    // 半角数字に変換
+    $num_half_width = mb_convert_kana( $num, 'anr' );
+
+    // 区切りカンマを削除
+    $num_plain = preg_replace( '/,/', '', $num_half_width );
+
+    // 文字列で返す
+    return (string) $num_plain;
 }

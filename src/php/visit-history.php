@@ -1,8 +1,35 @@
 <?php
 require_once(__DIR__ . '/functions.php');
 require_once(__DIR__ . '/Class/CustomerList.php');
+require_once(__DIR__ . '/Class/RegisterCompany.php');
+require_once(__DIR__ . '/Class/RegisterUser.php');
+
+session_start();
 
 $shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
+$sql = "SELECT s.`company_id`, c.`name`, s.`area`
+        FROM shops s
+        INNER JOIN companies c
+        ON s.`company_id` = c.`id`
+        WHERE s.`id` = :shop_id
+        LIMIT 1";
+
+$options = [
+  'shop_id' => $shop_id
+];
+
+$mysql = new ExecuteMySql($sql, $options);
+
+$shop = $mysql->execute()[0] ?? null;
+
+//ログインされていない場合はログイン画面へ
+if (
+  !(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) &&
+  !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
+) {
+  redirect('/shop_login.php?shop_id=' . $shop_id);
+}
 
 $yyyymm = filter_input(INPUT_GET, 'date', FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/^[0-9]{4}-[0-9]{2}$/'))) ?: date('Y-m');
 
@@ -10,10 +37,9 @@ $count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
 ]) ?: CustomerList::PAGE_COUNT;
 
+$admin_state = $_SESSION['USER']['admin_state'] ?? null;
 $customer_data = new CustomerList($shop_id, $count);
 $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
-// var_dump($yyyymm);
-// exit;
 ?>
 <!doctype html>
 <html lang="ja">
@@ -36,7 +62,7 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
   <header class="header">
     <div class="header-inner">
       <div class="header-content">
-        <h1 class="header-logo">Sample shop</h1>
+        <h1 class="header-logo"><?= $shop['name'] . '  ' . $shop['area'] ?></h1>
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
@@ -56,12 +82,11 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
         <li class="sidebar-item">
           <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">来店履歴一覧</a>
         </li>
-        <li class="sidebar-item">
-          <a href="reserve_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">予約一覧</a>
-        </li>
-        <li class="sidebar-item">
-          <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
-        </li>
+        <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
+          <li class="sidebar-item">
+            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
+          </li>
+        <?php endif; ?>
       </ul>
     </div>
 

@@ -11,11 +11,11 @@ $birthday_month = filter_input(INPUT_POST, 'birthday_month');
 $birthday_date = filter_input(INPUT_POST, 'birthday_date');
 $tel = filter_input(INPUT_POST, 'tel');
 
-$validation = new Validation;
+$validation = new Validation();
 
 $validation->checkNameFormat($first_name, $last_name);
 $validation->checkKanaFormat($first_kana, $last_kana);
-$validation->checkBirthdayFormat($birthday_year, $birthday_month, $birthday_date);
+$validation->checkDateFormat($birthday_year, $birthday_month, $birthday_date);
 $validation->checkMailFormat($email);
 $validation->checkTelFormat($tel);
 
