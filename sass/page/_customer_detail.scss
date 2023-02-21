@@ -74,12 +74,16 @@
     font-weight: bold;
   }
 
-  dd {
-    margin-top: 24px;
-  }
+  // dd {
+  //   margin-top: 24px;
+  // }
 
   input {
     width: 50%;
+  }
+
+  .invalid {
+    margin: 0;
   }
 
   #birthday {
@@ -232,9 +236,29 @@
   padding: 36px 110px;
 }
 
+.modal-title {
+  font-weight: bold;
+  font-size: 20px;
+}
+
 .modal-date {
+  margin-top: 8px;
   font-size: 20px;
   font-weight: bold;
+  display: flex;
+  justify-content: center;
+
+  input {
+    margin-right: 10px;
+    width: 60px;
+    text-align: center;
+  }
+
+  label {
+    &:not(:last-child){
+      margin-right: 10px;
+    }
+  }
 }
 
 .modal-price  {
@@ -246,6 +270,7 @@
   label {
       font-size: 18px;
       font-weight: bold;
+      white-space: nowrap;
     }
 
   input {
@@ -253,6 +278,7 @@
     margin-right: 16px;
     border: 1px solid $border-color;
     height: 40px;
+    width: 150px;
   }
 }
 
@@ -268,8 +294,8 @@
     margin-top: 30px;
     border: 1px solid $border-color;
     width: 100%;
-    vertical-align: middle;
-    resize: vertical;
+    resize: none;
+    height: 70px;
   }
 }
 

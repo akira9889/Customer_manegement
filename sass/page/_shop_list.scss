@@ -3,16 +3,13 @@
 }
 .shop-list {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .shop-item {
-
+  margin-right: 30px;
   margin-top: 16px;
   transition: color .3s;
-
-  & + & {
-    margin-left: 30px;
-  }
 
   &:hover {
     color: $cr-m;

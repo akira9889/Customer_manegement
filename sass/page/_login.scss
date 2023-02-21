@@ -25,3 +25,12 @@
     color: $cr-m;
   }
 }
+
+.return-login {
+  font-size: 12px;
+  transition: color .3s;
+
+  &:hover {
+    color: $cr-m;
+  }
+}
