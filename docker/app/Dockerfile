@@ -18,14 +18,17 @@ COPY ./package.json /var/www/html/
 RUN npm install
 
 # composer のインストール
-COPY --from=composer:1.10 /usr/bin/composer /usr/bin/composer
-RUN composer require vlucas/phpdotenv
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
+COPY ./composer.json /var/www/html/
+RUN composer install
 
 # ファイルのコピー
 COPY ./src /var/www/html
+# COPY ./phpunit.xml /var/www/html/
 COPY ./gulpfile.js /var/www/html/
 COPY ./.babelrc /var/www/html/
 COPY ./.eslintrc.js /var/www/html/
+COPY ./.env /var/app/customer_manegement/.env
 COPY ./docker/app/php.ini /usr/local/etc/php/php.ini
 COPY ./docker/app/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini

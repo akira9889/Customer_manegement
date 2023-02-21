@@ -11,8 +11,8 @@ services:
       - ./sass/:/var/www/html/sass
       - ./src/js:/var/www/html/js
       - ./src/php:/var/www/html/php
+      - ./src/tests:/var/www/html/tests
       - ./gulpfile.js:/var/www/html/gulpfile.js
-      - ./.env:/var/app/customer_manegement/.env
     ports:
       - "40080:80"
       - "3000:3000"
