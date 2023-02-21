@@ -47,16 +47,16 @@ $(() => {
           $(this).html('<input>');
           $(this).children('input').val(value).attr({ 'name': name, 'type': type });
         }
-
       }
+      $('.invalid').css('padding', '13px 0')
     });
-    editBtn.children('button').text('保存').attr({
+    editBtn.children('input').val('保存').attr({
       'type': 'submit'
     })
   }
 
   editBtn.click(() => {
-    if (editBtn.children('button').attr('type') === 'button') {
+    if (editBtn.children('input').attr('type') === 'button') {
       setFormInput();
       return false;
     }
