@@ -1,41 +1,95 @@
 <?php
-
+require_once(__DIR__ . '/Class/RegisterCompany.php');
+require_once(__DIR__ . '/Class/RegisterUser.php');
 require_once(__DIR__ . '/Class/RegisterCustomer.php');
 require_once(__DIR__ . '/Class/Customer.php');
+require_once(__DIR__ . '/Class/VisitHistory.php');
 require_once(__DIR__ . '/functions.php');
-// id取得
+
+session_start();
+
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 $customer = new Customer($id);
 $customer_data = $customer->fetchCustomerData();
 
+$user_id = (isset($_SESSION['USER']) && ($_SESSION['USER']['admin_state'] === RegisterUser::STORE_MANEGER || $_SESSION['USER']['admin_state'] === null)) ? $_SESSION['USER']['id'] : null;
 $shop_id = $customer_data['shop_id'];
 
+$sql = "SELECT s.`company_id`, c.`name`, s.`area`
+        FROM shops s
+        INNER JOIN companies c
+        ON s.`company_id` = c.`id`
+        WHERE s.`id` = :shop_id
+        LIMIT 1";
+
+$options = [
+  'shop_id' => $shop_id
+];
+
+$mysql = new ExecuteMySql($sql, $options);
+
+$shop = $mysql->execute()[0] ?? null;
+
+//ログインされていない場合はログイン画面へ
+if (
+  !(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) &&
+  !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
+) {
+  redirect('/shop_login.php?shop_id=' . $shop_id);
+}
+
+$modal_view_flug = FALSE;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $last_name = filter_input(INPUT_POST, 'last_name');
-  $first_name = filter_input(INPUT_POST, 'first_name');
-  $last_kana = filter_input(INPUT_POST, 'last_kana');
-  $first_kana = filter_input(INPUT_POST, 'first_kana');
-  $email = filter_input(INPUT_POST, 'email');
-  $birthday_year = filter_input(INPUT_POST, 'birthday_year');
-  $birthday_month = filter_input(INPUT_POST, 'birthday_month');
-  $birthday_date = filter_input(INPUT_POST, 'birthday_date');
-  $tel = filter_input(INPUT_POST, 'tel');
-  $gender = filter_input(INPUT_POST, 'gender');
-  $information = filter_input(INPUT_POST, 'information');
+  if (isset($_POST['customer_information'])) {
+    $last_name = filter_input(INPUT_POST, 'last_name');
+    $first_name = filter_input(INPUT_POST, 'first_name');
+    $last_kana = filter_input(INPUT_POST, 'last_kana');
+    $first_kana = filter_input(INPUT_POST, 'first_kana');
+    $email = filter_input(INPUT_POST, 'email');
+    $birthday_year = filter_input(INPUT_POST, 'birthday_year');
+    $birthday_month = filter_input(INPUT_POST, 'birthday_month');
+    $birthday_date = filter_input(INPUT_POST, 'birthday_date');
+    $tel = filter_input(INPUT_POST, 'tel');
+    $gender = filter_input(INPUT_POST, 'gender');
+    $information = filter_input(INPUT_POST, 'information');
 
-  $new_customer = new RegisterCustomer($last_name, $first_name, $last_kana, $first_kana, $email, $birthday_year, $birthday_month, $birthday_date, $tel, $gender, $information);
+    $new_customer = new RegisterCustomer($last_name, $first_name, $last_kana, $first_kana, $email, $birthday_year, $birthday_month, $birthday_date, $tel, $gender, $information);
 
-  $new_customer->registerCustomer();
+    $new_customer->registerCustomer();
 
-  $php_array = $new_customer->err;
-  $json_array = json_encode($php_array);
+    if ($new_customer->registered_state) {
+      redirect('customer_detail.php?id=' . $id);
+    }
+  } elseif (isset($_POST['visit_history'])) {
+    $history_data = filter_input_array(INPUT_POST, [
+      'year' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+      'month' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+      'day' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+      'shop_id' => FILTER_VALIDATE_INT,
+      'customer_id' => FILTER_VALIDATE_INT,
+      'user_id' => FILTER_VALIDATE_INT,
+      'memo' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+    ]);
 
-  if ($new_customer->registered_state) {
-    redirect('customer_detail.php?id=' . $id);
+    $price = filter_input(INPUT_POST, 'price', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    $history_data['price'] = $price;
+
+    $target_date = $history_data['year'] . '-' . $history_data['month'] . '-' . $history_data['day'];
+
+    $visit_history = new VisitHistory($history_data);
+
+    $visit_history->registerVisitHistory();
+
+    if (!empty($visit_history->getErrors())) {
+      $modal_view_flug = TRUE;
+    }
   }
 }
 
+$admin_state = $_SESSION['USER']['admin_state'] ?? null;
 $visit_history_data = $customer->fetchCustomerHistoriesData();
 
 ?>
@@ -60,7 +114,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
   <header class="header">
     <div class="header-inner">
       <div class="header-content">
-        <h1 class="header-logo">Sample shop</h1>
+        <h1 class="header-logo"><?= $shop['name'] . '  ' . $shop['area'] ?></h1>
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
@@ -80,18 +134,17 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         <li class="sidebar-item">
           <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
-        <li class="sidebar-item">
-          <a href="reserve_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">予約一覧</a>
-        </li>
-        <li class="sidebar-item">
-          <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
-        </li>
+        <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
+          <li class="sidebar-item">
+            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
+          </li>
+        <?php endif; ?>
       </ul>
     </div>
 
     <div class="main-content">
       <div class="adding-btn">
-        <button type="button" class="modal-open">来店履歴追加<span>＋</span></button>
+        <button class="modal-open" type="button">来店履歴追加<span>＋</span></button>
       </div>
       <div class="main-inner customer-form">
         <h2 class="main-title">お客様情報</h2>
@@ -117,30 +170,35 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         <div class="customer-sub-detail">
           <dl>
             <dt>生年月日</dt>
+            <p class="invalid"></p>
             <dd id="birthday" class="input"><?php echo date('Y年m月d日', strtotime($customer_data['birthday'])) ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>メールアドレス</dt>
+            <p class="invalid"></p>
             <dd class="input" data-name="email" data-type="email"><?= $customer_data['email'] ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>電話番号</dt>
+            <p class="invalid"></p>
             <dd class="input" data-name="tel" data-type="tel"><?= $customer_data['tel'] ?></dd>
           </dl>
         </div>
         <div class="customer-sub-detail">
           <dl>
             <dt>メモ</dt>
-            <dd class="input" data-name="information" data-type="textarea"><?= $customer_data['information'] ?></dd>
+            <dd class="input" data-name="information" data-type="textarea"><?= h($customer_data['information']) ?></dd>
           </dl>
         </div>
+
         <div class="edit-btn">
-          <button type="button">編集</button>
+          <input name="customer_information" type="button" value="編集">
         </div>
+
       </div>
 
       <div class="table-wrap">
@@ -150,7 +208,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
             <tr>
               <th>来店日</th>
               <th>総額</th>
-              <th>メモ</th>
+              <th>当日メモ</th>
               <th></th>
             </tr>
           </thead>
@@ -160,7 +218,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
                 <th><?= $data['date'] ?></th>
                 <td><?= number_format($data['price']) ?>円</td>
                 <td class="memo"><?= $data['memo'] ?></td>
-                <td><button type="button" class="modal-open"><i class="fa-solid fa-book-open"></i></button></td>
+                <td><button type="button" class="modal-open" data-date="<?= $data['date'] ?>"><i class="fa-solid fa-book-open"></i></button></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -172,29 +230,49 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
   <div class="modal-container">
     <div class="modal-body">
       <div class="modal-close">×</div>
-      <form class="modal-content">
-        <div class="modal-date">2022年10月7日</div>
+      <form class="modal-content" method="post">
+        <p class="modal-title">日付</p>
+
+
+        <div class="modal-date">
+          <input type="text" name="year" value="<?php isset($history_data) ? print $history_data['year'] : print date('Y'); ?>">
+          <label>年</label>
+          <input type="text" name="month" value="<?php isset($history_data) ? print $history_data['month'] : print date('m'); ?>">
+          <label>月</label>
+          <input type="text" name="day" value="<?php isset($history_data) ? print $history_data['day'] : print date('d'); ?>">
+          <label>日</label>
+        </div>
+        <p class="invalid"><?php if (isset($history_data) && isset($visit_history->getErrors()['date'])) echo $visit_history->getErrors()['date'] ?></p>
         <div class="modal-price">
           <label>総額</label>
-          <input type="text">
+          <input type="text" name="price" value="<?php if (isset($history_data['price'])) echo $history_data['price'] ?>">
           <span>円</span>
         </div>
+        <p class="invalid"><?php if (isset($history_data) && isset($visit_history->getErrors()['price'])) echo $visit_history->getErrors()['price'] ?></p>
         <div class="modal-memo">
           <label for="memo">メモ</label>
-          <textarea name="memo" rows="10"></textarea>
+          <p class="invalid"><?php if (isset($history_data) && isset($visit_history->getErrors()['memo'])) echo $visit_history->getErrors()['memo'] ?></p>
+          <textarea name="memo" rows="10"><?php if (isset($history_data['memo'])) echo $history_data['memo'] ?></textarea>
         </div>
+        <input type="hidden" name="customer_id" value="<?= $id ?>">
+        <input type="hidden" name="shop_id" value="<?= $shop_id ?>">
+        <input type="hidden" name="user_id" value="<?= $user_id ?>">
         <div class="modal-btn">
-          <button type="submit">変更</button>
+          <input type="submit" name="visit_history" value="変更">
         </div>
       </form>
     </div>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
   <script src="/js/script.js"></script>
   <script>
-    $(document).on('focusout', '.customer-form input', function() {
+    <?php if ($modal_view_flug) : ?>
+      const container = $('.modal-container');
+      container.addClass('active');
+    <?php endif; ?>
+
+    $(document).on('focusout', '.input input', function() {
       $.ajax({
         url: 'ajax_input_change.php',
         type: "POST",
@@ -215,12 +293,21 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
           //バリデーションエラー時
           if (err[key]) {
             if (key === 'name' || key === 'kana') {
+              $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
               $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
+
             } else if (key === 'birthday') {
-              $('#birthday').before(`<p class="invalid">${err[key]}</p>`)
+              // $('#birthday').prev('p').remove()
+              $('#birthday').prev('p').text('')
+              $('#birthday').prev('p').text(err[key])
+              $('#birthday').prev('p').css('padding', '0')
             } else {
               let input = $('input[name=' + key + ']');
-              input.parent(`dd[data-name=${key}]`).before(`<p class="invalid">${err[key]}</p>`);
+              // input.parent(`dd[data-name=${key}]`).prev('p').remove()
+              input.parent(`dd[data-name=${key}]`).prev('p').text('')
+              // input.parent(`dd[data-name=${key}]`).before(`<p class="invalid">${err[key]}</p>`);
+              input.parent(`dd[data-name=${key}]`).prev('p').text(err[key]).css('padding', '0')
+              // console.log(input.parent(`dd[data-name=${key}]`).before('p'));
             }
           }
           //バリデーションエラーがない時
@@ -228,10 +315,12 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
             if (key === 'name' || key === 'kana') {
               $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
             } else if (key === 'birthday') {
-              $('#birthday').prev('p').remove()
+              $('#birthday').prev('p').text('')
+              $('#birthday').prev('p').css('padding', '13px 0')
             } else {
               let input = $('input[name=' + key + ']');
-              input.parent(`dd[data-name=${key}]`).prev('p').remove()
+              input.parent(`dd[data-name=${key}]`).prev('p').text('')
+              input.parent(`dd[data-name=${key}]`).prev('p').css('padding', '13px 0')
             }
           }
         });
@@ -239,6 +328,36 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         alert("error");
       });
     });
+
+    $('.modal-open').click(function() {
+      $('.invalid').text('');
+      let target_date = $(this).data('date')
+
+      let year
+      let month
+      let day
+
+      if (target_date) {
+        year = target_date.slice(0, 4)
+        month = target_date.slice(5, 7)
+        day = target_date.slice(8, 10)
+        price = parseFloat($(this).closest('tr').children('td')[0].innerText.replace(/,/g, ""))
+        memo = $(this).closest('tr').children('td')[1].innerText
+      } else {
+        date = new Date();
+        year = date.getFullYear()
+        month = ("00" + (date.getMonth() + 1)).slice(-2)
+        day = ("00" + (date.getDate())).slice(-2);
+        price = ''
+        memo = ''
+      }
+
+      $('input[name="year"]').val(year)
+      $('input[name="month"]').val(month)
+      $('input[name="day"]').val(day)
+      $('input[name="price"]').val(price)
+      $('textarea[name="memo"]').val(memo)
+    })
   </script>
 
 </body>
