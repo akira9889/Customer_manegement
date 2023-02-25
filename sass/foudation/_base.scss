@@ -288,11 +288,7 @@ input {
     &:focus {
       outline: none;
     }
-
-    &:hover {
-      opacity: $opacity;
-    }
-
+    
     ::-moz-focus-inner {
       padding: 0;
       border: none;

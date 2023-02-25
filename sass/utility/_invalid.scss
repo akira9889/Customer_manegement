@@ -2,4 +2,8 @@
   font-size: 16px;
   margin-top: 8px;
   color: red;
+
+  @include mq("sp") {
+    font-size: 12px;
+  }
 }

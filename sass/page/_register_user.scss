@@ -5,8 +5,11 @@
 
   .register-input {
     justify-content: center;
+    max-width: 340px;
+    margin: 23px auto 0;
   }
 }
+
 .register-item__admin {
   label {
     display: inline-flex;
