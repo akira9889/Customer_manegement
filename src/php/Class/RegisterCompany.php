@@ -1,8 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
-require_once __DIR__ . '/ValidationInterface.php';
+require_once __DIR__ . '/Validation.php';
 
 final class RegisterCompany
 {
@@ -16,7 +17,7 @@ final class RegisterCompany
 
     private Validation $validation;
 
-    public function __construct(private array $company_login_data)
+    public function __construct(array $company_login_data)
     {
         foreach ($company_login_data as $key => $value) {
             $this->{$key} = $value;
@@ -26,7 +27,7 @@ final class RegisterCompany
     }
 
     //ユーザー登録
-    public function registerUser():void
+    public function registerUser(): void
     {
         $this->validate();
 
@@ -49,10 +50,11 @@ final class RegisterCompany
             $_SESSION['USER']['admin_state'] = self::OWNER;
 
             redirect('/shop_list.php?company_id=' . $company['id']);
+            exit;
         }
     }
 
-    private function validate():void
+    private function validate(): void
     {
         $data = [
             'company_name' =>  $this->name,
@@ -71,7 +73,7 @@ final class RegisterCompany
         $company = $this->fetchCompany();
 
         if ($company) {
-            $this->validation->addErros('company_name','こちらの「'.$this->name.'」という会社名は使われています。');
+            $this->validation->addErros('company_name', 'こちらの「' . $this->name . '」という会社名は使われています。');
         }
 
         if (!$company && ($this->name && $this->password !== $this->confirm_password)) {
@@ -79,7 +81,7 @@ final class RegisterCompany
         }
     }
 
-    public function fetchCompany():?array
+    public function fetchCompany(): ?array
     {
         $sql = "SELECT `id`, `name`
                 FROM companies
@@ -95,7 +97,7 @@ final class RegisterCompany
         return $mysql->execute()[0] ?? null;
     }
 
-    public function getErrors():array
+    public function getErrors(): array
     {
         return $this->validation->getErrors();
     }

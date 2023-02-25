@@ -5,54 +5,84 @@ require_once __DIR__ . '/RegisterCompany.php';
 
 class Login
 {
-    private readonly string $table_name;
+    protected string $name;
 
-    private readonly string $user_name;
+    protected string $password;
 
-    private readonly string $password;
+    protected Validation $validation;
 
-    public array $err;
+    protected bool $login_flag = FALSE;
 
-    public function __construct(string $user_name, string $password, string $table_name)
+    public function __construct(array $login_data)
     {
-        $this->user_name = $user_name;
-        $this->password = $password;
-        $this->table_name = $table_name;
+        foreach ($login_data as $key => $value) {
+            $this->{$key} = null_trim($value);
+        }
+
+        $this->validation = new Validation();
     }
-    //ユーザー取得
-    public function fetchUser()
+
+    public function login(): void
+    {
+        $this->validate();
+
+        if ($this->login_flag) {
+            $company = $this->fetchUser();
+            $_SESSION['USER'] = $company;
+            $_SESSION['USER']['admin_state'] = RegisterCompany::OWNER;
+            redirect('/shop_list.php' . '?company_id=' . $company['id']);
+            exit;
+        }
+    }
+
+    protected function fetchUser(): ?array
     {
         $sql = "SELECT *
-                FROM {$this->table_name}
+                FROM `companies`
                 WHERE `name` = :name
                 LIMIT 1";
 
-        $options = [
-                    'name' => $this->user_name
-                    ];
+        $options = ['name' => $this->name];
 
         $mysql = new ExecuteMySql($sql, $options);
 
         return $mysql->execute()[0] ?? null;
     }
 
-    public function check_login()
+    protected function validate(): void
     {
-        $user = $this->fetchUser();
+        $data = [
+            'user_name' => $this->name,
+            'password' => $this->password
+        ];
 
-        //バリデーションチェック
-        if (!$user) $this->err['name'] = $this->user_name . 'というアカウントは登録されておりません。';
-        if (!$this->user_name) $this->err['name'] = '会社名を入力してください。';
-        if ($user && $this->password !== $user['password']) $this->err['password'] = 'パスワードが違います';
-        if ($user && !$this->password) $this->err['password'] = 'パスワードを入力してください';
+        $rules = [
+            'user_name' => 'required',
+            'password' => 'required'
+        ];
 
-        if ($user && $this->password === $user['password']) {
-            $_SESSION['USER'] = $user;
-            $_SESSION['USER']['admin_state'] = RegisterCompany::OWNER;
-            return TRUE;
-        } else {
-            return FALSE;
+        $this->validation->validate($data, $rules);
+
+        if (empty($this->getErrors())) {
+            $company = $this->fetchUser();
+
+            if (!$company) {
+                $this->validation->addErros('user_name', 'こちらの「' . $this->name . '」というユーザーは登録されていません。');
+            }
+
+            if ($company && $this->password !== $company['password']) {
+                $this->validation->addErros('password', 'パスワードが違います。');
+            }
+
+            if (empty($this->getErrors()) && $company['password'] === $this->password) {
+                $this->login_flag = TRUE;
+            }
         }
+    }
+
+    public function getErrors(): array
+    {
+        return $this->validation->getErrors();
     }
 }
 

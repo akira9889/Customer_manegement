@@ -5,6 +5,7 @@ require_once(__DIR__ . '/functions.php');
 
 
 session_start();
+
 $shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
 $sql = "SELECT s.`company_id`, c.`name`, s.`area`
@@ -25,24 +26,27 @@ $shop = $mysql->execute()[0] ?? null;
 //オーナーまたは管理ユーザー以外はログイン画面へ遷移
 if (
   !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id']) &&
-  !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterUser::STORE_MANEGER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
+  !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterUser::STORE_MANEGER && isset($shop_id) && $shop_id === $_SESSION['USER']['shop_id'])
 ) {
   redirect('/shop_login.php?shop_id=' . $shop_id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $name = filter_input(INPUT_POST, 'name');
-  $password = filter_input(INPUT_POST, 'password');
-  $confirm_password = filter_input(INPUT_POST, 'confirm_password');
-  $admin_state = filter_input(INPUT_POST, 'admin_state', FILTER_VALIDATE_INT);
 
-  $user = new RegisterUser($name, $password, $confirm_password, $admin_state);
+  $new_user_data = filter_input_array(INPUT_POST, [
+    'name' => FILTER_DEFAULT,
+    'password' => FILTER_DEFAULT,
+    'confirm_password' => FILTER_DEFAULT,
+    'admin_state' => FILTER_VALIDATE_INT,
+  ]);
+
+  $new_user_data['shop_id'] = $shop_id;
+
+  $user = new RegisterUser($new_user_data);
 
   $user->registerUser();
 
-  if ($user->getRegisterdState()) {
-    redirect('/customer_list.php?shop_id=' . $shop_id);
-  }
+  $errors = $user->getErrors();
 }
 
 $admin_state = $_SESSION['USER']['admin_state'] ?? null;
@@ -103,28 +107,28 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
         <form class="register-form" method="post">
           <ul class="register-list">
             <li class="register-item">
-              <label for="last-name">ユーザ名</label>
+              <label for="last_name">ユーザ名</label>
               <div class="register-input">
-                <input type="text" name="name" placeholder="ユーザ名" value="<?= $name ?? null ?>">
+                <input type="text" name="name" placeholder="ユーザ名" value="<?= $new_user_data['name'] ?? null ?>">
               </div>
-              <p class="invalid"><?php if (isset($user->err['name'])) echo $user->err['name'] ?></p>
+              <p class="invalid"><?= $errors['user_name'] ?? null?></p>
             </li>
             <li class="register-item">
-              <label for="last-name">パスワード</label>
+              <label for="last_name">パスワード</label>
               <div class="register-input">
                 <input type="text" name="password" placeholder="パスワード">
               </div>
-              <p class="invalid"><?php if (isset($user->err['password'])) echo $user->err['password'] ?></p>
+              <p class="invalid"><?= $errors['password'] ?? null?></p>
             </li>
             <li class=" register-item">
-              <label for="last-name">パスワード確認</label>
+              <label for="last_name">パスワード確認</label>
               <div class="register-input">
                 <input type="text" name="confirm_password" placeholder="パスワード確認">
               </div>
-              <p class="invalid"><?php if (isset($user->err['confirm_password'])) echo $user->err['confirm_password'] ?></p>
+              <p class="invalid"><?= $errors['confirm_password'] ?? null ?></p>
             </li>
             <li class=" register-item register-item__admin">
-              <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state"><span></span></label>
+              <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state" <?php if (isset($new_user_data['admin_state'])) echo 'checked' ?>><span></span></label>
               <p>(ユーザーの追加や削除、顧客関連の情報を追加、編集することができます。)</p>
             </li>
             <div class="register-btn">

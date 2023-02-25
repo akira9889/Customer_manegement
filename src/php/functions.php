@@ -1,10 +1,12 @@
 <?php
-function redirect($path) {
+function redirect($path): void
+{
 header('Location:'. $path);
 exit;
 }
 
-function sessionDestroy() {
+function sessionDestroy(): void
+{
     $_SESSION = array();
 
     session_destroy();
@@ -19,7 +21,7 @@ function group_by(array $table, string $key): array
     return $groups;
 }
 
-function h($str)
+function h($str): ?string
 {
     if ($str) {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
@@ -28,7 +30,7 @@ function h($str)
     }
 }
 
-function getPrevDate($target_date = NULL, $term = 1)
+function getPrevDate($target_date = NULL, $term = 1): string
 {
     if (empty($target_date)) $target_date = date('Y-m-d');
     // $term月前末日を取得...(1)
@@ -43,13 +45,16 @@ function getPrevDate($target_date = NULL, $term = 1)
     }
 }
 
-/**
-   * 数字のみ抽出する
-   *
-   * @param string ソース文字列
-   * @return string 抽出した数値
-   */
-function extractNumber(string $num)
+function null_trim($string): ?string
+{
+    if ($string === null) {
+        return null;
+    } else {
+        return trim($string);
+    }
+}
+
+function extractNumber(string $num): string
 {
     // 半角数字に変換
     $num_half_width = mb_convert_kana( $num, 'anr' );

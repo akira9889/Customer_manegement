@@ -3,60 +3,48 @@
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
 require_once(__DIR__ . '/Login.php');
 
-final class ShopLogin extends Login {
+class ShopLogin extends Login {
 
-    private readonly string $table_name;
+    private int $shop_id;
 
-    private readonly string $user_name;
-
-    private readonly string $password;
-
-    public function __construct(string $user_name, string $password, string $table_name)
+    public function __construct(array $login_data)
     {
-        $this->user_name = $user_name;
-        $this->password = $password;
-        $this->table_name = $table_name;
+        foreach ($login_data as $key => $value) {
+            $this->{$key} = null_trim($value);
+        }
+
+        $this->shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
+
+        $this->validation = new Validation();
     }
 
-    private function getShopId() {
-        return $_GET['shop_id'];
+    public function login(): void
+    {
+        $this->validate();
+
+        if ($this->login_flag) {
+            $user = $this->fetchUser();
+            $_SESSION['USER'] = $user;
+            redirect('/customer_list.php?shop_id=' . $user['shop_id']);
+            exit;
+        }
     }
 
-    //ユーザー取得
-    public function fetchUser() {
+    public function fetchUser(): ?array
+    {
         $sql = "SELECT *
-                FROM {$this->table_name}
-                WHERE name = :name
-                AND shop_id = :shop_id
+                FROM `users`
+                WHERE `name` = :name
+                AND `shop_id` = :shop_id
                 LIMIT 1";
 
         $options = [
-            'name' => $this->user_name,
-            'shop_id' => $this->getShopId()
+            'name' => $this->name,
+            'shop_id' => $this->shop_id
         ];
 
         $mysql = new ExecuteMySql($sql, $options);
 
-        if (!empty($mysql->execute()[0])) {
-            return $mysql->execute()[0];
-        }
-    }
-
-    public function checkLogin()
-    {
-        $user = $this->fetchUser();
-
-        //バリデーションチェック
-        if (!$user) $this->err['name'] = $this->user_name . 'というアカウントは登録されておりません。';
-        if (!$this->user_name) $this->err['name'] = 'ユーザー名を入力してください。';
-        if ($user && $this->password !== $user['password']) $this->err['password'] = 'パスワードが違います';
-        if ($user && !$this->password) $this->err['password'] = 'パスワードを入力してください';
-
-        if ($user && $this->password === $user['password']) {
-            $_SESSION['USER'] = $user;
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return $mysql->execute()[0] ?? null;
     }
 }

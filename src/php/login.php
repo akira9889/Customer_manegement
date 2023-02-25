@@ -11,20 +11,16 @@ if (isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] 
     redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
 }
 
-$name = '';
-$password = '';
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_input(INPUT_POST, 'name');
+    $login_data = filter_input_array(INPUT_POST, [
+        'name' => FILTER_DEFAULT,
+        'password' => FILTER_DEFAULT
+    ]);
 
-    $password = $_POST['password'];
-    $password = $_POST['password'];
+    $company = new Login($login_data);
+    $company->login();
 
-    $company = new Login($name, $password, 'companies');
-
-    if ($company->check_login()) {
-        redirect('/shop_list.php' . '?company_id=' . $company->fetchUser()['id']);
-    }
+    $errors = $company->getErrors();
 }
 
 ?>
@@ -60,25 +56,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <form class="register-form" method="post">
                 <ul class="register-list">
                     <li class="register-item">
-                        <label for="last-name">会社名</label>
+                        <label for="name">会社名</label>
                         <div class="register-input">
-                            <input type="text" name="name" placeholder="会社名" value="<?= $name ?>">
+                            <input id="name" type="text" name="name" placeholder="ユーザー" value="<?= $login_data['user_name'] ?? null ?>">
                         </div>
-                        <p class="invalid"><?php if (isset($company->err['name'])) echo $company->err['name'] ?></p>
+                        <p class="invalid"><?= $errors['user_name'] ?? null ?></p>
                     </li>
                     <li class="register-item">
-                            <label for="last-name">パスワード</label>
+                        <label for="password">パスワード</label>
                         <div class="register-input">
-                            <input type="text" name="password" placeholder="パスワード">
+                            <input id="password" type="text" name="password" placeholder="パスワード">
                         </div>
-                        <p class="invalid"><?php if (isset($company->err['password'])) echo $company->err['password'] ?></p>
+                        <p class="invalid"><?= $errors['password'] ?? null ?></p>
                     </li>
                     <div class=" register-btn">
-                            <button type="submit">ログイン</button>
+                        <button type="submit">ログイン</button>
                     </div>
                 </ul>
             </form>
-            <p class="register-guid">会社登録をしてない方は<a href="/register_company.php">こちら</a>で登録をしてください。</p>
+            <p class="register-guid">ユーザー登録をしてない方は<a href="/register_company.php">こちら</a>から登録をしてください。</p>
         </div>
     </div>
 

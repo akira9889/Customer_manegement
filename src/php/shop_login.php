@@ -31,18 +31,19 @@ if ((isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $sh
     redirect('/customer_list.php?shop_id=' . $shop_id);
 }
 
-$name = '';
-$password = '';
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = $_POST['name'];
-    $password = $_POST['password'];
+    $login_data = filter_input_array(INPUT_POST, [
+        'name' => FILTER_DEFAULT,
+        'password' => FILTER_DEFAULT
+    ]);
 
-    $user = new ShopLogin($name, $password, 'users');
+    $user = new ShopLogin($login_data);
+    $user->login();
 
-    if ($user->checkLogin()) {
-        redirect('/customer_list.php?shop_id=' . $user->fetchUser($name)['shop_id']);
-    };
+    $errors = $user->getErrors();
+
+    // var_dump($errors);
+    // exit;
 }
 ?>
 <!doctype html>
@@ -66,28 +67,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <header class="header">
         <div class="header-inner">
             <div class="header-content">
-                <h1 class="header-logo"><?php if(isset($shop['name'])) echo $shop['name'] ?></h1>
+                <h1 class="header-logo"><?= $shop['name'] ?? null ?></h1>
             </div>
         </div>
     </header>
 
-    <div class="login-inner">
+    <div class="login-inner shop-login-inner">
         <div class="inner">
             <form class="register-form" method="post">
                 <ul class="register-list">
                     <li class="register-item">
-                        <label for="last-name">氏名</label>
+                        <label for="last_name">氏名</label>
                         <div class="register-input">
-                            <input type="text" name="name" placeholder="氏名" value="<?= $name ?>">
+                            <input type="text" name="name" placeholder="氏名" value="<?= $login_data['name'] ?? null ?>">
                         </div>
-                        <p class="invalid"><?php if (isset($user->err['name'])) echo $user->err['name'] ?></p>
+                        <p class="invalid"><?= $errors['user_name'] ?? null ?></p>
                     </li>
                     <li class="register-item">
-                        <label for="last-name">パスワード</label>
+                        <label for="last_name">パスワード</label>
                         <div class="register-input">
                             <input type="text" name="password" placeholder="パスワード">
                         </div>
-                        <p class="invalid"><?php if (isset($user->err['password'])) echo $user->err['password'] ?></p>
+                        <p class="invalid"><?= $errors['password'] ?? null ?></p>
                     </li>
                     <div class="register-btn">
                         <button type="submit">ログイン</button>

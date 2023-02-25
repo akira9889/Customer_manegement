@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
-require_once __DIR__ . '/ValidationInterface.php';
+require_once __DIR__ . '/Validation.php';
 require_once __DIR__ . '/../functions.php';
 
 final class RegisterShop
@@ -22,7 +22,8 @@ final class RegisterShop
         $this->validation = new Validation();
     }
 
-    public function register_shop() {
+    public function register_shop(): void
+    {
 
         $this->validate();
 
@@ -44,7 +45,7 @@ final class RegisterShop
         }
     }
 
-    private function validate()
+    private function validate(): void
     {
         $data = [
             'prefecture_id' =>  $this->prefecture_id,
@@ -73,14 +74,14 @@ final class RegisterShop
 
         $mysql = new ExecuteMySql($sql, $options);
 
-        $shop = $mysql->execute()[0]?? null;
+        $shop = $mysql->execute()[0] ?? null;
 
         if ($shop) {
             $this->validation->addErros('shop', 'この店舗はすでに登録されています。');
         }
     }
 
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->validation->getErrors();
     }

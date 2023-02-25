@@ -41,7 +41,7 @@ $right = filter_input(INPUT_GET, 'right', FILTER_VALIDATE_INT, [
 
 $count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
   'options' => [
-    'default' => 100,
+    'default' => 10,
     'min_range' => 1,
     'max_range' => CustomerList::PAGE_COUNT
   ],

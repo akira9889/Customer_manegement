@@ -13,7 +13,6 @@ $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $customer = new Customer($id);
 $customer_data = $customer->fetchCustomerData();
 
-$user_id = (isset($_SESSION['USER']) && ($_SESSION['USER']['admin_state'] === RegisterUser::STORE_MANEGER || $_SESSION['USER']['admin_state'] === null)) ? $_SESSION['USER']['id'] : null;
 $shop_id = $customer_data['shop_id'];
 
 $sql = "SELECT s.`company_id`, c.`name`, s.`area`
@@ -43,37 +42,36 @@ $modal_view_flug = FALSE;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if (isset($_POST['customer_information'])) {
-    $last_name = filter_input(INPUT_POST, 'last_name');
-    $first_name = filter_input(INPUT_POST, 'first_name');
-    $last_kana = filter_input(INPUT_POST, 'last_kana');
-    $first_kana = filter_input(INPUT_POST, 'first_kana');
-    $email = filter_input(INPUT_POST, 'email');
-    $birthday_year = filter_input(INPUT_POST, 'birthday_year');
-    $birthday_month = filter_input(INPUT_POST, 'birthday_month');
-    $birthday_date = filter_input(INPUT_POST, 'birthday_date');
-    $tel = filter_input(INPUT_POST, 'tel');
-    $gender = filter_input(INPUT_POST, 'gender');
-    $information = filter_input(INPUT_POST, 'information');
+    $update_customer_data = filter_input_array(INPUT_POST, [
+      'last_name' => FILTER_DEFAULT,
+      'first_name' => FILTER_DEFAULT,
+      'last_kana' => FILTER_DEFAULT,
+      'first_kana' => FILTER_DEFAULT,
+      'gender' => FILTER_DEFAULT,
+      'email' => FILTER_DEFAULT,
+      'birthday_year' => FILTER_DEFAULT,
+      'birthday_month' => FILTER_DEFAULT,
+      'birthday_date' => FILTER_DEFAULT,
+      'tel' => FILTER_DEFAULT,
+      'information' => FILTER_DEFAULT,
+      'shop_id' => FILTER_VALIDATE_INT
+    ]);
 
-    $new_customer = new RegisterCustomer($last_name, $first_name, $last_kana, $first_kana, $email, $birthday_year, $birthday_month, $birthday_date, $tel, $gender, $information);
+    $update_customer = new RegisterCustomer($update_customer_data);
 
-    $new_customer->registerCustomer();
-
-    if ($new_customer->registered_state) {
-      redirect('customer_detail.php?id=' . $id);
-    }
+    $update_customer->registerCustomer();
   } elseif (isset($_POST['visit_history'])) {
     $history_data = filter_input_array(INPUT_POST, [
-      'year' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-      'month' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-      'day' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+      'year' => FILTER_DEFAULT,
+      'month' => FILTER_DEFAULT,
+      'day' => FILTER_DEFAULT,
       'shop_id' => FILTER_VALIDATE_INT,
       'customer_id' => FILTER_VALIDATE_INT,
       'user_id' => FILTER_VALIDATE_INT,
-      'memo' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+      'memo' => FILTER_DEFAULT,
     ]);
 
-    $price = filter_input(INPUT_POST, 'price', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $price = filter_input(INPUT_POST, 'price', FILTER_DEFAULT);
 
     $history_data['price'] = $price;
 
@@ -89,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
+$user_id = (isset($_SESSION['USER']) && ($_SESSION['USER']['admin_state'] === RegisterUser::STORE_MANEGER || $_SESSION['USER']['admin_state'] === null)) ? $_SESSION['USER']['id'] : null;
 $admin_state = $_SESSION['USER']['admin_state'] ?? null;
 $visit_history_data = $customer->fetchCustomerHistoriesData();
 
@@ -151,13 +150,13 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
 
         <div class="customer-main-detail">
           <div class="customer-name">
-            <div class="customer-last-name">
+            <div class="customer-last_name">
               <ruby>
                 <rt class="input" data-name="last_kana" data-type="text"><?= $customer_data['last_kana'] ?></rt>
                 <rb class="input" data-name="last_name" data-type="text"><?= $customer_data['last_name'] ?></rb>
               </ruby>
             </div>
-            <div class=" customer-first-name">
+            <div class=" customer-first_name">
               <ruby>
                 <rt class="input" data-name="first_kana" data-type="text"><?= $customer_data['first_kana'] ?></rt>
                 <rb class="input" data-name="first_name" data-type="text"><?= $customer_data['first_name'] ?></rb>
@@ -198,7 +197,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         <div class="edit-btn">
           <input name="customer_information" type="button" value="編集">
         </div>
-
+        <input name="shop_id" type="hidden" value="<?= $shop_id ?>">
       </div>
 
       <div class="table-wrap">
@@ -289,25 +288,27 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         },
         dataType: "json"
       }).done(function(err) {
+        console.log(err);
         Object.keys(err).forEach(key => {
           //バリデーションエラー時
           if (err[key]) {
-            if (key === 'name' || key === 'kana') {
-              $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
-              $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
+            if (key === 'first_name' || key === 'last_name' || key === 'first_kana' || key === 'last_kana') {
+              let input = $('input[name=' + key + ']');
+              // $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
+              input.next(`p[data-err="${key}"]`).remove();
+              // input.next(`p[data-err="${key}"]`).text(err[key]).css('padding', '0');
+
+              input.after(`<p class="invalid" data-err="${key}">${err[key]}</p>`);
+              // $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
 
             } else if (key === 'birthday') {
-              // $('#birthday').prev('p').remove()
               $('#birthday').prev('p').text('')
               $('#birthday').prev('p').text(err[key])
               $('#birthday').prev('p').css('padding', '0')
             } else {
               let input = $('input[name=' + key + ']');
-              // input.parent(`dd[data-name=${key}]`).prev('p').remove()
               input.parent(`dd[data-name=${key}]`).prev('p').text('')
-              // input.parent(`dd[data-name=${key}]`).before(`<p class="invalid">${err[key]}</p>`);
               input.parent(`dd[data-name=${key}]`).prev('p').text(err[key]).css('padding', '0')
-              // console.log(input.parent(`dd[data-name=${key}]`).before('p'));
             }
           }
           //バリデーションエラーがない時

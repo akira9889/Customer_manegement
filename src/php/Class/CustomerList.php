@@ -3,7 +3,7 @@ require_once __DIR__ . '/../lib/ExecuteMySql.php';
 
 class CustomerList
 {
-    public const PAGE_COUNT = 100;
+    public const PAGE_COUNT = 10;
 
     public ?int $prev_right;
 
@@ -20,12 +20,12 @@ class CustomerList
         $this->count = $count;
     }
 
-    public function fetchCustomerList()
+    public function fetchCustomerList(): array
     {
         $sql = "SELECT *
-                FROM customers
-                WHERE shop_id = :shop_id
-                ORDER BY id ASC
+                FROM `customers`
+                WHERE `shop_id` = :shop_id
+                ORDER BY `id` ASC
                 LIMIT " . $this->count + 1;
 
         $options = [
@@ -43,7 +43,7 @@ class CustomerList
         return $rows;
     }
 
-    public function fetchNextCustomerList($left)
+    public function fetchNextCustomerList($left): array
     {
         $sql = "SELECT * FROM (
                 SELECT * FROM customers WHERE id < {$left} AND shop_id = :shop_id1 ORDER BY id DESC LIMIT 1
@@ -70,7 +70,7 @@ class CustomerList
         return $rows;
     }
 
-    public function fetchPrevCustomerList($right)
+    public function fetchPrevCustomerList($right): array
     {
         $sql = "SELECT * FROM (
                 SELECT * FROM customers WHERE id > {$right} AND shop_id = :shop_id1 ORDER BY id ASC LIMIT 1
@@ -101,7 +101,7 @@ class CustomerList
         return $rows;
     }
 
-    public function fetchVisitHistoriesData($yyyymm)
+    public function fetchVisitHistoriesData($yyyymm): array
     {
         $sql = "SELECT v.`date`, c.`id`, CONCAT(c.`last_name`, '　', c.`first_name`) as `name`, v.`memo`
                 FROM visit_histories v

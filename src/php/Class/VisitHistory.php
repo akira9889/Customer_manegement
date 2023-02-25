@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/ValidationInterface.php';
+require_once __DIR__ . '/Validation.php';
 
 class VisitHistory
 {
@@ -19,7 +19,7 @@ class VisitHistory
         foreach ($history_data as $key => $value) {
             if ($key === 'price') {
                 $this->{$key} = extractNumber($value);
-            } elseif($key === 'month' || $key === 'day') {
+            } elseif ($key === 'month' || $key === 'day') {
                 if (ctype_digit($value)) {
                     $this->{$key} = sprintf('%02d', $value);
                 } else {
@@ -34,13 +34,13 @@ class VisitHistory
         $this->validation = new Validation();
     }
 
-    public function registerVisitHistory()
+    public function registerVisitHistory(): void
     {
         $visit_history_id = $this->fetchTargetDateHistoryId();
 
         $this->validate();
 
-        if (!count($this->getErrors())) {
+        if (empty($this->getErrors())) {
             if ($visit_history_id) {
                 $sql = "UPDATE `visit_histories`
                         SET `date` = :date, `price` = :price, `memo` = :memo
@@ -71,7 +71,7 @@ class VisitHistory
         }
     }
 
-    public function fetchTargetDateHistoryId()
+    public function fetchTargetDateHistoryId(): ?int
     {
         $sql = "SELECT id
                 FROM `visit_histories`
@@ -91,7 +91,7 @@ class VisitHistory
         return $visit_history_id;
     }
 
-    private function validate()
+    private function validate(): void
     {
         $data = [
             'date' => $this->target_date,
@@ -108,7 +108,7 @@ class VisitHistory
         $this->validation->validate($data, $rules);
     }
 
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->validation->getErrors();
     }
