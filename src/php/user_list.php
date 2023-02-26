@@ -1,8 +1,6 @@
 <?php
-require_once(__DIR__ . '/Class/RegisterUser.php');
+require_once(__DIR__ . '/Class/UserList.php');
 require_once(__DIR__ . '/Class/RegisterCompany.php');
-require_once(__DIR__ . '/functions.php');
-
 
 session_start();
 
@@ -30,6 +28,10 @@ if (
 ) {
     redirect('/shop_login.php?shop_id=' . $shop_id);
 }
+
+$users = new UserList($shop_id);
+$admin_users = $users->fetchAdminUserList();
+$common_users = $users->fetchCommonUserList();
 
 $admin_state = $_SESSION['USER']['admin_state'] ?? null;
 ?>
@@ -87,93 +89,29 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                 <h2 class="main-title">スタッフ一覧</h2>
                 <div class="admin-user">
                     <h3>管理者</h3>
-                    <ul class="user-list">
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                    </ul>
+                    <?php if (!empty($admin_users)) : ?>
+                        <ul class="user-list">
+                            <?php foreach ($admin_users as $user) : ?>
+                                <li class="user-item" data-id="<?= $user['id'] ?>">
+                                    <div class="user-icon"><i class="fa-solid fa-user"></i></div>
+                                    <p class="user-name"><?= $user['name'] ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
                 <div class="common-user">
                     <h3>メンバー</h3>
-                    <ul class="user-list">
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                        <li class="user-item">
-                            <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                            <p class="user-name">上野誠太郎</p>
-                        </li>
-                    </ul>
+                    <?php if (!empty($common_users)) : ?>
+                        <ul class="user-list">
+                            <?php foreach ($common_users as $user) : ?>
+                                <li class="user-item" data-id="<?= $user['id'] ?>">
+                                    <div class="user-icon"><i class="fa-solid fa-user"></i></div>
+                                    <p class="user-name"><?= $user['name'] ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -200,7 +138,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                         <input type="button" value="更新">
                     </div>
                 </div>
-                <input type="hidden" name="id">
+                <input id="user-id" type="hidden" name="id">
             </form>
         </div>
     </div>
@@ -208,7 +146,20 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="/js/script.js"></script>
     <script>
+        const user = $('.user-item');
+        const container = $('.modal-container');
         const close = $('.modal-close');
+
+        user.on('click', (e) => {
+            container.addClass('active');
+
+            let id = $(e.currentTarget).data('id')
+            let name = $(e.currentTarget).find('.user-name').text()
+            
+            $('.modal-content .user-name').text(name)
+            $('#user-id').val(id)
+            return false;
+        });
 
         $('#user-delete-btn').click(() => {
             $('#user-update-btn').css('display', 'none')
