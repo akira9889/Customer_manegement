@@ -1,0 +1,175 @@
+.user_list {
+  .modal-content {
+    padding: 80px;
+
+    @include mq("sp") {
+      padding: 36px 15px;
+    }
+  }
+}
+
+.admin-user,
+.common-user {
+  margin-top: 40px;
+}
+
+.user-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.user-item {
+  cursor: pointer;
+  background-color: transparent;
+  transition: background-color .3s;
+
+  &:hover {
+    background-color: lighten($cr-m, 20%);
+  }
+}
+
+@include mq("md") {
+  .user-item {
+    width: calc((100% - 60px) / 7);
+    margin-left: 10px;
+    margin-top: 10px;
+
+    &:nth-child(7n+1) {
+      margin-left: 0;
+    }
+
+    &:nth-child(-n+7) {
+      margin-top: 0;
+    }
+  }
+}
+
+@include mq("sp") {
+  .user-item {
+    width: calc((100% - 40px) / 5);
+    margin-left: 10px;
+    margin-top: 10px;
+
+    &:nth-child(5n+1) {
+      margin-left: 0;
+    }
+
+    &:nth-child(-n+5) {
+      margin-top: 0;
+    }
+  }
+}
+
+.user-icon {
+  font-size: 40px;
+  text-align: center;
+
+  @include mq("sp") {
+    font-size: 28px;
+  }
+}
+
+.user-name {
+  text-align: center;
+  font-size: 16px;
+  white-space: nowrap;
+
+  @include mq("sp") {
+    font-size: 12px;
+  }
+}
+
+.modal-content {
+  .user-icon {
+    font-size: 70px;
+  }
+
+  .user-name {
+    font-size: 22px;
+  }
+}
+
+.modal-btn-list {
+  display: flex;
+  justify-content: center;
+  margin-top: 120px;
+
+  @include mq("sp") {
+    margin-top: 72px;
+  }
+}
+
+#user-delete-btn {
+  margin-right: 30px;
+
+  input {
+    padding: 4px 47px;
+    background-color: #F05B5B;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken(#F05B5B, 10%);
+      color: darken(#fff, 10%);
+    }
+
+    @include mq("sp") {
+      font-size: 20px;
+    }
+  }
+}
+
+#user-update-btn {
+  input {
+    padding: 4px 47px;
+    background-color: $cr-m;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken($cr-m, 10%);
+      color: darken(#fff, 10%);
+    }
+
+    @include mq("sp") {
+      font-size: 20px;
+    }
+  }
+
+  @include mq("sp") {
+    font-size: 20px;
+  }
+}
+
+#cancel-btn {
+  display: none;
+  margin-right: 30px;
+
+  button {
+    padding: 4px 10px;
+    background-color: $gray;
+    border: none;
+    color: #fff;
+    font-size: 28px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken($gray, 10%);
+      color: darken(#fff, 10%);
+    }
+
+    @include mq("sp") {
+      font-size: 20px;
+    }
+  }
+}
