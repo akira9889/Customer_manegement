@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../lib/ExecuteMySql.php';
+require_once __DIR__ . '/RegisterUser.php';
 
 class UserList
 {
@@ -51,6 +51,26 @@ class UserList
         $options = [
             'shop_id' => $this->shop_id,
             'id' => $id
+        ];
+
+        $mysql = new ExecuteMySql($sql, $options);
+
+        $mysql->execute();
+    }
+
+    public function updateUser(int $id, ?string $admin_state): void
+    {
+        $sql = "UPDATE `users`
+                SET `admin_state` = :admin_state
+                WHERE `shop_id` = :shop_id
+                AND `id` = :id";
+
+        $admin_state = isset($admin_state) ? RegisterUser::STORE_MANEGER : null;
+
+        $options = [
+            'id' => $id,
+            'shop_id' => $this->shop_id,
+            'admin_state' => $admin_state
         ];
 
         $mysql = new ExecuteMySql($sql, $options);
