@@ -41,4 +41,20 @@ class UserList
 
         return $mysql->execute();
     }
+
+    public function deleteUser(int $id): void
+    {
+        $sql = "DELETE FROM `users`
+                WHERE `shop_id` = :shop_id
+                AND `id` = :id";
+
+        $options = [
+            'shop_id' => $this->shop_id,
+            'id' => $id
+        ];
+
+        $mysql = new ExecuteMySql($sql, $options);
+
+        $mysql->execute();
+    }
 }
