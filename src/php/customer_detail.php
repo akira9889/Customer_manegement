@@ -288,18 +288,13 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         },
         dataType: "json"
       }).done(function(err) {
-        console.log(err);
         Object.keys(err).forEach(key => {
           //バリデーションエラー時
           if (err[key]) {
             if (key === 'first_name' || key === 'last_name' || key === 'first_kana' || key === 'last_kana') {
               let input = $('input[name=' + key + ']');
-              // $('.customer-main-detail').find(`p[data-err="${key}"]`).remove();
               input.next(`p[data-err="${key}"]`).remove();
-              // input.next(`p[data-err="${key}"]`).text(err[key]).css('padding', '0');
-
               input.after(`<p class="invalid" data-err="${key}">${err[key]}</p>`);
-              // $('.customer-main-detail').prepend(`<p class="invalid" data-err="${key}">${err[key]}</p>`)
 
             } else if (key === 'birthday') {
               $('#birthday').prev('p').text('')
