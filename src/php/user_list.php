@@ -29,6 +29,16 @@ if (
     redirect('/shop_login.php?shop_id=' . $shop_id);
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['delete'])) {
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+        $users = new UserList($shop_id);
+        $users->deleteUser($id);
+    }
+}
+
 $users = new UserList($shop_id);
 $admin_users = $users->fetchAdminUserList();
 $common_users = $users->fetchCommonUserList();
@@ -88,8 +98,8 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
             <div class="main-inner">
                 <h2 class="main-title">スタッフ一覧</h2>
                 <div class="admin-user">
-                    <h3>管理者</h3>
                     <?php if (!empty($admin_users)) : ?>
+                    <h3>管理者</h3>
                         <ul class="user-list">
                             <?php foreach ($admin_users as $user) : ?>
                                 <li class="user-item" data-id="<?= $user['id'] ?>">
@@ -101,8 +111,8 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                     <?php endif; ?>
                 </div>
                 <div class="common-user">
-                    <h3>メンバー</h3>
                     <?php if (!empty($common_users)) : ?>
+                    <h3>メンバー</h3>
                         <ul class="user-list">
                             <?php foreach ($common_users as $user) : ?>
                                 <li class="user-item" data-id="<?= $user['id'] ?>">
@@ -119,7 +129,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
     <div class="modal-container">
         <div class="modal-body">
             <div class="modal-close"></div>
-            <form class="modal-content">
+            <form class="modal-content" method="post">
                 <div class="user-icon"><i class="fa-solid fa-user"></i></div>
                 <p class="user-name">上野誠太郎</p>
                 <li class=" register-item register-item__admin">
@@ -128,14 +138,17 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                 </li>
 
                 <div class="modal-btn-list">
-                    <div id="cancel-btn">
+                    <div id="cancel-btn" class="hidden">
                         <button type="button">キャンセル</button>
                     </div>
-                    <div id="user-delete-btn">
-                        <input type="button" value="削除">
+                    <div id="user-delete-btn" class="user-delete-btn">
+                        <button type="input">削除</button>
                     </div>
                     <div id="user-update-btn">
-                        <input type="button" value="更新">
+                        <input name="update" type="submit" value="更新">
+                    </div>
+                    <div id="confirm-delete-btn" class="user-delete-btn hidden">
+                        <input name="delete" type="submit" value="削除">
                     </div>
                 </div>
                 <input id="user-id" type="hidden" name="id">
@@ -155,22 +168,30 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
 
             let id = $(e.currentTarget).data('id')
             let name = $(e.currentTarget).find('.user-name').text()
-            
+
             $('.modal-content .user-name').text(name)
             $('#user-id').val(id)
             return false;
         });
 
         $('#user-delete-btn').click(() => {
-            $('#user-update-btn').css('display', 'none')
-            $('#cancel-btn').css('display', 'inline-block')
-            $('#user-delete-btn').css('margin-right', '0')
+            $('#user-update-btn').addClass('hidden')
+            $('#cancel-btn').removeClass('hidden')
+            $('#confirm-delete-btn').removeClass('hidden')
+            $('#user-delete-btn').addClass('hidden')
             $('.register-item__admin > label').css('display', 'none')
+
             $('.register-item__admin > p').text('こちらのユーザー削除しますか？');
+            return false;
+
         })
 
         $('#cancel-btn').click(() => {
             clearModal()
+        })
+
+        $('#confirm-delete-btn').click(() => {
+            $('.modal-content').submit();
         })
 
         close.on('click', () => {
@@ -188,9 +209,10 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
         });
 
         const clearModal = () => {
-            $('#user-update-btn').css('display', 'inline-block')
-            $('#cancel-btn').css('display', 'none')
-            $('#user-delete-btn').css('margin-right', '30px')
+            $('#user-update-btn').removeClass('hidden')
+            $('#cancel-btn').addClass('hidden')
+            $('#user-delete-btn').removeClass('hidden')
+            $('#confirm-delete-btn').addClass('hidden')
             $('.register-item__admin > label').css('display', 'inline-flex')
             $('.register-item__admin > p').text('ユーザーの追加や削除、編集することができます。');
         }

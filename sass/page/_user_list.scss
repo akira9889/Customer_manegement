@@ -99,10 +99,10 @@
   }
 }
 
-#user-delete-btn {
+.user-delete-btn {
   margin-right: 30px;
 
-  input {
+  input, button {
     padding: 4px 47px;
     background-color: #F05B5B;
     border: none;
@@ -150,7 +150,6 @@
 }
 
 #cancel-btn {
-  display: none;
   margin-right: 30px;
 
   button {
