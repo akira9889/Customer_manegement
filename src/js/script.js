@@ -23,13 +23,6 @@ $(() => {
     }
   });
 
-  const user = $('.user-item');
-
-  user.on('click', () => {
-    container.addClass('active');
-    return false;
-  });
-
   const editBtn = $('.edit-btn');
 
   const setFormInput = () => {
