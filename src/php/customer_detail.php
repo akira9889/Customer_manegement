@@ -217,7 +217,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
                 <th><?= $data['date'] ?></th>
                 <td><?= number_format($data['price']) ?>円</td>
                 <td class="memo"><?= $data['memo'] ?></td>
-                <td><button type="button" class="modal-open" data-date="<?= $data['date'] ?>"><i class="fa-solid fa-book-open"></i></button></td>
+                <td><button type="button" class="modal-open" data-date="<?= $data['date'] ?>"><i class="fa-solid fa-pencil"></i></button></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -228,7 +228,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
 
   <div class="modal-container">
     <div class="modal-body">
-      <div class="modal-close">×</div>
+      <div class="modal-close"></div>
       <form class="modal-content" method="post">
         <p class="modal-title">日付</p>
 
@@ -360,7 +360,6 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
       $('textarea[name="memo"]').val(memo)
     })
   </script>
-
 </body>
 
 </html>

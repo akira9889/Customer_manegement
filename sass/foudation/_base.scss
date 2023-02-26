@@ -199,7 +199,6 @@ form {
   button {
     width: auto;
     display: inline-block;
-    padding: 0.6em 2em;
     margin: 0;
     background-image: none;
     background-color: $cr-m;
@@ -231,7 +230,6 @@ form {
 input,
 textarea {
   width: 100%;
-  padding: 8px;
   border: 1px solid $cr-form-bd;
   border-radius: 0;
   background-image: none;
@@ -271,7 +269,6 @@ input {
   &[type="button"] {
     width: auto;
     display: inline-block;
-    padding: 0.6em 2em;
     margin: 0;
     background-image: none;
     background-color: $cr-m;
@@ -288,7 +285,7 @@ input {
     &:focus {
       outline: none;
     }
-    
+
     ::-moz-focus-inner {
       padding: 0;
       border: none;
