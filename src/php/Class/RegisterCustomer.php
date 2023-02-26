@@ -54,7 +54,7 @@ final class RegisterCustomer
         if (empty($this->getErrors())) {
 
             if ($this->customer_id) {
-                $sql = "UPDATE customers
+                $sql = "UPDATE `customers`
                         SET `first_name` = :first_name, `last_name` = :last_name, `first_kana` = :first_kana, `last_kana` = :last_kana, `email` = :email, `tel` = :tel, birthday = :birthday, `information` = :information
                         WHERE `id` = :id";
 
@@ -70,7 +70,7 @@ final class RegisterCustomer
                     'id' => $this->customer_id
                 ];
             } else {
-                $sql = "INSERT INTO customers (`shop_id`, `first_name`, `last_name`, `first_kana`, `last_kana`, `email`, `tel`, `birthday`, `gender`)
+                $sql = "INSERT INTO `customers` (`shop_id`, `first_name`, `last_name`, `first_kana`, `last_kana`, `email`, `tel`, `birthday`, `gender`)
                         VALUES(:shop_id, :first_name, :last_name, :first_kana, :last_kana, :email, :tel, :birthday, :gender)";
 
                 $options = [

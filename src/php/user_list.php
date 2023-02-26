@@ -1,6 +1,7 @@
 <?php
 require_once(__DIR__ . '/Class/UserList.php');
 require_once(__DIR__ . '/Class/RegisterCompany.php');
+require_once __DIR__ . '/functions.php';
 
 session_start();
 
@@ -36,6 +37,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $users = new UserList($shop_id);
         $users->deleteUser($id);
+    }
+
+    if (isset($_POST['update'])) {
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $admin_state = filter_input(INPUT_POST, 'admin_state');
+        $users = new UserList($shop_id);
+
+        $users->updateUser($id, $admin_state);
     }
 }
 
@@ -99,7 +109,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                 <h2 class="main-title">スタッフ一覧</h2>
                 <div class="admin-user">
                     <?php if (!empty($admin_users)) : ?>
-                    <h3>管理者</h3>
+                        <h3>管理者</h3>
                         <ul class="user-list">
                             <?php foreach ($admin_users as $user) : ?>
                                 <li class="user-item" data-id="<?= $user['id'] ?>">
@@ -112,7 +122,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                 </div>
                 <div class="common-user">
                     <?php if (!empty($common_users)) : ?>
-                    <h3>メンバー</h3>
+                        <h3>メンバー</h3>
                         <ul class="user-list">
                             <?php foreach ($common_users as $user) : ?>
                                 <li class="user-item" data-id="<?= $user['id'] ?>">
@@ -131,9 +141,9 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
             <div class="modal-close"></div>
             <form class="modal-content" method="post">
                 <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-                <p class="user-name">上野誠太郎</p>
+                <p class="user-name"></p>
                 <li class=" register-item register-item__admin">
-                    <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state" <?php if (isset($new_user_data['admin_state'])) echo 'checked' ?>><span></span></label>
+                    <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state"><span></span></label>
                     <p>(ユーザーの追加や削除、編集することができます。)</p>
                 </li>
 
@@ -171,8 +181,26 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
 
             $('.modal-content .user-name').text(name)
             $('#user-id').val(id)
+
+            $.ajax({
+                url: 'ajax_get_admin_state.php',
+                type: "POST",
+                data: {
+                    id: id
+                },
+                dataType: "text"
+            }).done(function(admin) {
+                if (admin) {
+                    $('#admin').prop('checked', true)
+                } else {
+                    $('#admin').prop('checked', false)
+                }
+            }).fail(function() {
+                alert('接続エラー');
+            });
+
             return false;
-        });
+        })
 
         $('#user-delete-btn').click(() => {
             $('#user-update-btn').addClass('hidden')
