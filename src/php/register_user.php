@@ -93,8 +93,12 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
           <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
-          <li class="sidebar-item">
-            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">設定</a>
+          <li class="sidebar-item has-sub-menu">
+            <p class="sidebar-link">設定</p>
+            <ul class="sub-menu">
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+            </ul>
           </li>
         <?php endif; ?>
       </ul>
@@ -111,14 +115,14 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
               <div class="register-input">
                 <input type="text" name="name" placeholder="ユーザ名" value="<?= $new_user_data['name'] ?? null ?>">
               </div>
-              <p class="invalid"><?= $errors['user_name'] ?? null?></p>
+              <p class="invalid"><?= $errors['user_name'] ?? null ?></p>
             </li>
             <li class="register-item">
               <label for="last_name">パスワード</label>
               <div class="register-input">
                 <input type="text" name="password" placeholder="パスワード">
               </div>
-              <p class="invalid"><?= $errors['password'] ?? null?></p>
+              <p class="invalid"><?= $errors['password'] ?? null ?></p>
             </li>
             <li class=" register-item">
               <label for="last_name">パスワード確認</label>
@@ -138,7 +142,8 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
       </div>
     </div>
   </div>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="/js/script.js"></script>
 </body>
 
 </html>
