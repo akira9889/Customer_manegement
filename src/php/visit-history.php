@@ -83,8 +83,12 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
           <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">来店履歴一覧</a>
         </li>
         <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
-          <li class="sidebar-item">
-            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
+          <li class="sidebar-item has-sub-menu">
+            <p class="sidebar-link">設定</p>
+            <ul class="sub-menu">
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+            </ul>
           </li>
         <?php endif; ?>
       </ul>
@@ -135,6 +139,7 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.19.0/clusterize.min.js"></script>
+  <script src="/js/script.js"></script>
   <script>
     const search = document.getElementById('search');
 

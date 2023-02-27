@@ -99,8 +99,13 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
           <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
-          <li class="sidebar-item">
-            <a href="register_user.php?shop_id=<?= $shop_id ?>" class="sidebar-link">設定</a>
+          <li class="sidebar-item has-sub-menu">
+            <p class="sidebar-link">設定</p>
+
+            <ul class="sub-menu">
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+            </ul>
           </li>
         <?php endif; ?>
       </ul>

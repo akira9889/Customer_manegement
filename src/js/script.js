@@ -1,4 +1,15 @@
 $(() => {
+  $('.has-sub-menu').hover(
+    function () {
+      $(this).addClass('active')
+      $(this).children('.sub-menu').slideDown(100)
+    },
+    function () {
+      $(this).removeClass('active')
+      $(this).children('.sub-menu').slideUp(100)
+
+    }
+  )
 
   // 変数に要素を入れる
   const open = $('.modal-open');

@@ -18,9 +18,6 @@
   }
 
   &-list {
-    @include mq("pc") {
-      padding: 0 20px;
-    }
 
     @include mq("tab") {
       display: flex;
@@ -33,7 +30,7 @@
     text-align: center;
 
     @include mq("pc") {
-      padding: 20px 0;
+      padding: 20px;
     }
 
     @include mq("tab") {
@@ -51,6 +48,7 @@
     display: inline-block;
     width: 100%;
     transition: background-color .3s;
+    cursor: pointer;
 
     &:hover {
         background-color: lighten($cr-m, 20%);
@@ -67,5 +65,48 @@
 .active {
   &.sidebar-link {
     background-color: lighten($cr-m, 20%);
+  }
+}
+
+.has-sub-menu {
+  position: relative;
+  transition: all .3s;
+
+  &::after {
+    content: '\f054';
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    transition: all .1s;
+  }
+
+  & > .sidebar-link {
+      pointer-events: none;
+  }
+
+  .sub-menu {
+    display: none;
+  }
+}
+
+.sub-menu {
+  background-color: #fff;
+  position: absolute;
+  box-shadow: 3px 0 3px rgba($color: #000000, $alpha: 0.1);
+
+  @include mq("pc") {
+    top: 0;
+    left: calc(100%);
+    width: calc(100%);
+  }
+}
+
+.active.has-sub-menu {
+
+  &::after {
+    transform: translateY(-50%) rotate(90deg);
   }
 }
