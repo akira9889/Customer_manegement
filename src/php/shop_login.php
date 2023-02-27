@@ -41,9 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user->login();
 
     $errors = $user->getErrors();
-
-    // var_dump($errors);
-    // exit;
 }
 ?>
 <!doctype html>
