@@ -11,7 +11,7 @@ services:
       - ./sass/:/var/www/html/sass
       - ./src/js:/var/www/html/js
       - ./src/php:/var/www/html/php
-      - ./src/tests:/var/www/html/tests
+      - ./src/img:/var/www/html/img
       - ./gulpfile.js:/var/www/html/gulpfile.js
     ports:
       - "40080:80"
