@@ -4,6 +4,8 @@ const $ = loadPlugins();
 // const pkg = require('./package.json');
 // const conf = pkg["gulp-config"];
 // const sizes = conf.sizes;
+const mozjpeg = require('imagemin-mozjpeg');
+const pngquant = require('imagemin-pngquant');
 const sass = require('gulp-sass')(require('sass'));
 const autoprefixer = require('autoprefixer');
 const cssdeclsort = require('css-declaration-sorter');
@@ -70,8 +72,27 @@ function jsClean() {
 //     .pipe($.eslintNew({ fix: true }))
 //     .pipe($.eslintNew.format())
 //     .pipe($.eslintNew.failAfterError())
-//     .pipe(dest('./js'))
+//     .pipe(dest('./public/jf')
 // }
+
+function imageMin() {
+  return src('./img' + '/**/*.{png,jpg,gif,jpeg}')
+    .pipe($.changed('./public/img')) // src/imgフォルダの中身と、出力先のimgフォルダの中身を比較して異なるものだけ処理(新しく追加されたファイル等)
+    .pipe($.imagemin([
+      pngquant({
+        quality: [.60, .70], // 画質
+        speed: 1 // スピード
+      }),
+      mozjpeg({
+        quality: 85, // 画質 こちらも0から100まで指定できるが、pngquantと違って65-80のように幅を持って指定はできない。1つの数字のみ。
+        progressive: true // baselineとprogressiveがある。baselineよりprogressiveのほうがエンコードは遅いが圧縮率は高い。
+      }),
+      $.imagemin.svgo(),
+      $.imagemin.optipng(),
+      $.imagemin.gifsicle()
+    ]))
+    .pipe(dest('./public/img')) // imgファイルに保存(出力)
+}
 
 function startAppServer() {
   //-------------------------------------
@@ -94,7 +115,8 @@ function startAppServer() {
     base: './public',
   }, function () {
     server.init({
-      proxy: 'localhost:8000'
+      proxy: 'localhost:8000',
+      open: false
     });
   });
 
@@ -102,6 +124,7 @@ function startAppServer() {
   // watch('./sass/**/*.scss', series(cssClean, styles));
   watch('./sass/**/*.scss', series(styles));
   watch('./js/*.js', series(jsClean, scripts));
+  watch('./img' + '/**/*.{png,jpg,gif,jpeg}', series(imageMin));
   watch(['./sass/**/*.scss',
     './js/*.js',
     './html/*.html',
@@ -122,5 +145,6 @@ exports.htmlClean = htmlClean;
 exports.phpClean = phpClean;
 exports.csslean = cssClean;
 exports.jsClean = jsClean;
+exports.imageMin = imageMin;
 exports.serve = serve;
 exports.default = serve;

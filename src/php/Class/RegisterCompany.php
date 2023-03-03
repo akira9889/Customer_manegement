@@ -49,7 +49,7 @@ final class RegisterCompany
             $_SESSION['USER'] = $company;
             $_SESSION['USER']['admin_state'] = self::OWNER;
 
-            redirect('/shop_list.php?company_id=' . $company['id']);
+            redirect('/shop_list/?company_id=' . $company['id']);
             exit;
         }
     }

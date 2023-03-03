@@ -27,7 +27,7 @@ if (
     !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id']) &&
     !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterUser::STORE_MANEGER && isset($shop_id) && $shop_id === $_SESSION['USER']['shop_id'])
 ) {
-    redirect('/shop_login.php?shop_id=' . $shop_id);
+    redirect('/shop_login/?shop_id=' . $shop_id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -80,7 +80,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                 <nav id="header-nav" class="header-nav">
                     <ul id="header-list" class="header-list">
                         <li class="header-item">
-                            <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+                            <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
                         </li>
                 </nav>
             </div>
@@ -91,18 +91,18 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
         <div class="sidebar">
             <ul class="sidebar-list">
                 <li class="sidebar-item">
-                    <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+                    <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
+                    <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
                 </li>
                 <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
                     <li class="sidebar-item has-sub-menu">
                         <p class="sidebar-link">設定</p>
 
                         <ul class="sub-menu">
-                            <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
-                            <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+                            <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+                            <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
@@ -188,7 +188,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
             $('#user-id').val(id)
 
             $.ajax({
-                url: 'ajax_get_admin_state.php',
+                url: '/ajax_get_admin_state/',
                 type: "POST",
                 data: {
                     id: id

@@ -5,7 +5,7 @@ require_once(__DIR__ . '/Class/RegisterCompany.php');
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+
     $company_login_data = filter_input_array(INPUT_POST, [
         'name' =>  FILTER_DEFAULT,
         'password' =>  FILTER_DEFAULT,
@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <button type="submit">登録</button>
                     </div>
             </form>
-            <a class="return-login" href="login.php">ログイン画面へ戻る<span>→</span></a>
+            <a class="return-login" href="/login">ログイン画面へ戻る<span>→</span></a>
         </div>
     </div>
 

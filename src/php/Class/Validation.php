@@ -50,6 +50,7 @@ class Validation
       'confirm_password' => '確認用パスワード',
       'tel' => '電話',
       'date' => '日付',
+      'yyyymm' => '日付',
       'price' => '総額',
       'memo' => 'メモ',
       'area' => '店舗名',
@@ -131,6 +132,11 @@ class Validation
   private function date($value): bool
   {
     return preg_match('/\A(19[0-9]{2}|[2-9][0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])\z/u', $value);
+  }
+
+  private function yyyymm($value): bool
+  {
+    return preg_match('/\A(19[0-9]{2}|[2-9][0-9]{3})-(0[1-9]|1[0-2])\z/u', $value);
   }
 
   private function prefecture($value): bool

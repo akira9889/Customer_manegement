@@ -7,7 +7,7 @@ $company_id = filter_input(INPUT_GET, 'company_id', FILTER_VALIDATE_INT);
 
 //ログインされていない場合はログイン画面へ
 if (!isset($_SESSION['USER']['admin_state']) || $_SESSION['USER']['admin_state'] !== 1 || $_SESSION['USER']['id'] !== $company_id) {
-    redirect('/login.php?company_id=' . $company_id);
+    redirect('/login/?company_id=' . $company_id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -54,7 +54,7 @@ $prefectures = $mysql->execute();
                 <nav id="header-nav" class="header-nav">
                     <ul id="header-list" class="header-list">
                         <li class="header-item">
-                            <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+                            <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
                         </li>
                 </nav>
             </div>
@@ -65,10 +65,10 @@ $prefectures = $mysql->execute();
         <div class="sidebar">
             <ul class="sidebar-list">
                 <li class="sidebar-item">
-                    <a href="shop_list.php?company_id=<?= $_GET['company_id'] ?>" class="sidebar-link">店舗一覧</a>
+                    <a href="/shop_list/?company_id=<?= $_GET['company_id'] ?>" class="sidebar-link">店舗一覧</a>
                 </li>
                 <li class="sidebar-item">
-                    <a href="register_shop.php?company_id=<?= $_GET['company_id'] ?>" class="sidebar-link">店舗追加　＋</a>
+                    <a href="/register_shop/?company_id=<?= $_GET['company_id'] ?>" class="sidebar-link">店舗追加　＋</a>
                 </li>
             </ul>
         </div>

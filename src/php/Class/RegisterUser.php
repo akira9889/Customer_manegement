@@ -49,7 +49,7 @@ class RegisterUser
 
             $mysql->execute();
 
-            redirect('/customer_list.php?shop_id=' . $this->shop_id);
+            redirect('/customer_list/?shop_id=' . $this->shop_id);
             exit;
 
         }

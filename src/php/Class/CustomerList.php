@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../lib/ExecuteMySql.php';
+require_once __DIR__ . '/Validation.php';
 
 class CustomerList
 {
@@ -12,7 +13,6 @@ class CustomerList
     public int $shop_id;
 
     public int $count;
-
 
     public function __construct(int $shop_id, int $count)
     {
@@ -103,23 +103,43 @@ class CustomerList
 
     public function fetchVisitHistoriesData($yyyymm): array
     {
-        $sql = "SELECT v.`date`, c.`id`, CONCAT(c.`last_name`, '　', c.`first_name`) as `name`, v.`memo`
-                FROM visit_histories v
-                INNER JOIN customers c
-                ON v.customer_id = c.id
-                WHERE v.`shop_id` = :shop_id
-                AND DATE_FORMAT(`date`, '%Y-%m') = :date
-                ORDER BY v.`date` DESC
-                ";
+        $validation = new Validation();
 
-        $options = [
-            'shop_id' => $this->shop_id,
-            'date' => $yyyymm
-        ];
+        $data = ['yyyymm' => $yyyymm];
 
-        $mysql = new ExecuteMySql($sql, $options);
+        $rules = ['yyyymm' => 'required|yyyymm'];
 
-        return $mysql->execute();
+        $validation->validate($data, $rules);
 
+        //今月〜過去１２ヶ月の範囲かどうか
+        $check_date = new DateTime($yyyymm . '-01');
+        $start_date = new DateTime('first day of -11 month 00:00');
+        $end_date = new DateTime('first day of this month 00:00');
+
+        if ($check_date < $start_date || $end_date < $check_date) {
+            throw new Exception('日付の範囲が不正', 500);
+        }
+
+        if (empty($validation->getErrors())) {
+            $sql = "SELECT v.`date`, c.`id`, CONCAT(c.`last_name`, '　', c.`first_name`) as `name`, v.`memo`
+                    FROM `visit_histories` v
+                    INNER JOIN `customers` c
+                    ON v.`customer_id` = c.`id`
+                    WHERE v.`shop_id` = :shop_id
+                    AND DATE_FORMAT(`date`, '%Y-%m') = :date
+                    ORDER BY v.`date` DESC
+                    ";
+
+            $options = [
+                'shop_id' => $this->shop_id,
+                'date' => $yyyymm
+            ];
+
+            $mysql = new ExecuteMySql($sql, $options);
+
+            return $mysql->execute();
+        } else {
+            throw new Exception('日付の値が不正', 500);
+        }
     }
 }

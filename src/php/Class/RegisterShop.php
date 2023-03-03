@@ -41,7 +41,7 @@ final class RegisterShop
 
             $mysql->execute();
 
-            redirect('/shop_list.php?company_id=' . $this->company_id);
+            redirect('/shop_list/?company_id=' . $this->company_id);
         }
     }
 
