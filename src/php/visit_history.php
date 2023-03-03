@@ -31,15 +31,16 @@ if (
   redirect('/shop_login.php?shop_id=' . $shop_id);
 }
 
-$yyyymm = filter_input(INPUT_GET, 'date', FILTER_VALIDATE_REGEXP, array('options' => array('regexp' => '/^[0-9]{4}-[0-9]{2}$/'))) ?: date('Y-m');
+$yyyymm = filter_input(INPUT_GET, 'date', FILTER_DEFAULT) ?: date('Y-m');
 
 $count = filter_input(INPUT_GET, 'count', FILTER_VALIDATE_INT, [
   'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
 ]) ?: CustomerList::PAGE_COUNT;
 
-$admin_state = $_SESSION['USER']['admin_state'] ?? null;
 $customer_data = new CustomerList($shop_id, $count);
 $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
+
+$admin_state = $_SESSION['USER']['admin_state'] ?? null;
 ?>
 <!doctype html>
 <html lang="ja">
@@ -66,7 +67,7 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
-              <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+              <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
             </li>
         </nav>
       </div>
@@ -77,17 +78,17 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+          <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">来店履歴一覧</a>
+          <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link active">来店履歴一覧</a>
         </li>
         <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
           <li class="sidebar-item has-sub-menu">
             <p class="sidebar-link">設定</p>
             <ul class="sub-menu">
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
             </ul>
           </li>
         <?php endif; ?>
@@ -127,7 +128,7 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
                 <th><?= $customer['date'] ?></th>
                 <td><?= $customer['name'] ?></td>
                 <td class="memo"><?= $customer['memo'] ?></td>
-                <td class="row-link"><a href="customer_detail.php?id=<?= $customer['id'] ?>"></a></td>
+                <td class="row-link"><a href="/customer_detail/?id=<?= $customer['id'] ?>"></a></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -155,7 +156,7 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
     $(document).on('keyup', 'input', function() {
       let yyyymm = $('#select_date').val();
       $.ajax({
-        url: 'ajax_visit_history.php', //データベースを繋げるファイル
+        url: '/ajax_visit_history/', //データベースを繋げるファイル
         type: "POST",
         data: {
           search_word: $('#search').val(),
@@ -164,7 +165,6 @@ $visit_histories_data = $customer_data->fetchVisitHistoriesData($yyyymm);
         },
         dataType: "json"
       }).done(function(customers) {
-        console.log(customers)
         var date = ''
         var name = ''
         var kana = ''

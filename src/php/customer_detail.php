@@ -35,7 +35,7 @@ if (
   !(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) &&
   !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
 ) {
-  redirect('/shop_login.php?shop_id=' . $shop_id);
+  redirect('/shop_login/?shop_id=' . $shop_id);
 }
 
 $modal_view_flug = FALSE;
@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'birthday_date' => FILTER_DEFAULT,
       'tel' => FILTER_DEFAULT,
       'information' => FILTER_DEFAULT,
-      'shop_id' => FILTER_VALIDATE_INT
+      'shop_id' => FILTER_VALIDATE_INT,
+      'customer_id' => FILTER_VALIDATE_INT
     ]);
 
     $update_customer = new RegisterCustomer($update_customer_data);
@@ -117,7 +118,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
-              <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+              <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
             </li>
         </nav>
       </div>
@@ -128,18 +129,18 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+          <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
+          <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
           <li class="sidebar-item has-sub-menu">
             <p class="sidebar-link">設定</p>
 
             <ul class="sub-menu">
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
             </ul>
           </li>
         <?php endif; ?>
@@ -202,6 +203,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
         <div class="edit-btn">
           <input name="customer_information" type="button" value="編集">
         </div>
+        <input name="customer_id" type="hidden" value="<?= $id ?>">
         <input name="shop_id" type="hidden" value="<?= $shop_id ?>">
       </div>
 
@@ -278,7 +280,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
 
     $(document).on('focusout', '.input input', function() {
       $.ajax({
-        url: 'ajax_input_change.php',
+        url: '/ajax_input_change/',
         type: "POST",
         data: {
           first_name: $('input[name=first_name]').val(),

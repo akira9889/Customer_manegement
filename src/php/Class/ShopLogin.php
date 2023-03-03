@@ -25,7 +25,7 @@ class ShopLogin extends Login {
         if ($this->login_flag) {
             $user = $this->fetchUser();
             $_SESSION['USER'] = $user;
-            redirect('/customer_list.php?shop_id=' . $user['shop_id']);
+            redirect('/customer_list/?shop_id=' . $user['shop_id']);
             exit;
         }
     }

@@ -2,25 +2,26 @@
 require_once __DIR__ . '/lib/ExecuteMySql.php';
 require_once(__DIR__ . '/Class/CustomerList.php');
 
-$search_word = filter_input(INPUT_POST, 'search_word');
-
-$shop_id = filter_input(INPUT_POST, 'shop_id', FILTER_VALIDATE_INT);
-
-$yyyymm = filter_input(INPUT_POST, 'yyyymm');
-
-$left = filter_input(INPUT_POST, 'left', FILTER_VALIDATE_INT, [
-    'options' => ['min_range' => 1],
-]);
-
-$right = filter_input(INPUT_POST, 'right', FILTER_VALIDATE_INT, [
-    'options' => ['min_range' => 1],
-]);
-
-$count = filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT, [
-    'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
-]) ?: CustomerList::PAGE_COUNT;
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $search_word = filter_input(INPUT_POST, 'search_word');
+
+    $shop_id = filter_input(INPUT_POST, 'shop_id', FILTER_VALIDATE_INT);
+
+    $yyyymm = filter_input(INPUT_POST, 'yyyymm');
+
+    $left = filter_input(INPUT_POST, 'left', FILTER_VALIDATE_INT, [
+        'options' => ['min_range' => 1],
+    ]);
+
+    $right = filter_input(INPUT_POST, 'right', FILTER_VALIDATE_INT, [
+        'options' => ['min_range' => 1],
+    ]);
+
+    $count = filter_input(INPUT_POST, 'count', FILTER_VALIDATE_INT, [
+        'options' => ['min_range' => 1, 'max_range' => CustomerList::PAGE_COUNT],
+    ]) ?: CustomerList::PAGE_COUNT;
+    
     if ($search_word) {
         $sql = "SELECT v.`date`, c.*, CONCAT(c.`last_name`, '　', c.`first_name`) as `name`, v.`memo`
                 FROM `customers` c
@@ -68,8 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $customer_data = new ExecuteMySql($sql, $options);
     $customer_list = $customer_data->execute();
-    // $customer_list['yyyymm'] = $yyyymm;
-
 
     header("Content-type: application/json; charset=UTF-8");
 

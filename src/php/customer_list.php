@@ -8,6 +8,10 @@ session_start();
 
 $shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
+if (!$shop_id) {
+  throw new Exception('店舗IDが取得出来ない', 404);
+}
+
 $sql = "SELECT s.`company_id`, c.`name`, s.`area`
         FROM shops s
         INNER JOIN companies c
@@ -28,7 +32,7 @@ if (
   !(isset($_SESSION['USER']) && (isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id)) &&
   !(isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])
 ) {
-  redirect('/shop_login.php?shop_id=' . $shop_id);
+  redirect('/shop_login/?shop_id=' . $shop_id);
 }
 
 $left = filter_input(INPUT_GET, 'left', FILTER_VALIDATE_INT, [
@@ -84,7 +88,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
         <nav id="header-nav" class="header-nav">
           <ul id="header-list" class="header-list">
             <li class="header-item">
-              <a class="header-item-link" href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i></a>
+              <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
             </li>
         </nav>
       </div>
@@ -95,18 +99,18 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
     <div class="sidebar">
       <ul class="sidebar-list">
         <li class="sidebar-item">
-          <a href="customer_list.php?shop_id=<?= $shop_id ?>" class="sidebar-link active">顧客情報一覧</a>
+          <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link active">顧客情報一覧</a>
         </li>
         <li class="sidebar-item">
-          <a href="visit-history.php?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
+          <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
         </li>
         <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
           <li class="sidebar-item has-sub-menu">
             <p class="sidebar-link">設定</p>
 
             <ul class="sub-menu">
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="register_user.php?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="user_list.php?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
             </ul>
           </li>
         <?php endif; ?>
@@ -119,7 +123,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
           <input id="search" name="search_word" type="text" placeholder="検索" class="search">
         </form>
         <div class="adding-btn">
-          <a href="register_customer.php?shop_id=<?= $shop_id ?>">顧客新規作成<span>＋</span></a>
+          <a href="/register_customer/?shop_id=<?= $shop_id ?>">顧客新規作成<span>＋</span></a>
         </div>
       </div>
 
@@ -141,7 +145,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
                 <td><?= $customer['tel'] ?></td>
                 <td><?= $customer['email'] ?></td>
                 <td><?= $customer['birthday'] ?></td>
-                <td class="row-link" data-id="id=<?= $customer['id'] ?>"><a href="customer_detail.php?id=<?= $customer['id'] ?>"></a></td>
+                <td class="row-link" data-id="id=<?= $customer['id'] ?>"><a href="/customer_detail/?id=<?= $customer['id'] ?>"></a></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -198,7 +202,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
         let right = null;
       }
       $.ajax({
-        url: 'ajax_search.php', //データベースを繋げるファイル
+        url: '/ajax_search/', //データベースを繋げるファイル
         type: "POST",
         data: {
           search_word: $('input[name=search_word]').val(),
@@ -238,7 +242,7 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
               '<td>' + customer['tel'] + '</td>' +
               '<td>' + customer['email'] + '</td>' +
               '<td>' + customer['birthday'] + '</td>' +
-              '<td class="row-link"}"><a href="customer_detail.php?id=' + customer['id'] + '"></a></td>' +
+              '<td class="row-link"}"><a href="/customer_detail/?id=' + customer['id'] + '"></a></td>' +
               '</tr>',
             active: true
           });

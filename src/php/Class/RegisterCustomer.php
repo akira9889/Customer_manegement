@@ -92,7 +92,7 @@ final class RegisterCustomer
 
             $customer_id = $this->fetchCustomerId();
 
-            redirect('customer_detail.php?id=' . $customer_id);
+            redirect('/customer_detail/?id=' . $customer_id);
             exit;
         }
     }
@@ -120,6 +120,9 @@ final class RegisterCustomer
             'tel' => 'required|tel'
         ];
 
+
+        // var_dump($this->customer_id);
+        // exit;
         if (!$this->customer_id) {
             $data['gender'] = $this->gender;
             $rules['gender'] = 'gender';

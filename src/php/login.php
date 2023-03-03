@@ -8,7 +8,7 @@ session_start();
 
 //ログイン済みの場合、店舗一覧ページに遷移
 if (isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER) {
-    redirect('/shop_list.php' . '?company_id=' . $_SESSION['USER']['id']);
+    redirect('/shop_list/' . '?company_id=' . $_SESSION['USER']['id']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </ul>
             </form>
-            <p class="register-guid">ユーザー登録をしてない方は<a href="/register_company.php">こちら</a>から登録をしてください。</p>
+            <p class="register-guid">ユーザー登録をしてない方は<a href="/register_company/">こちら</a>から登録をしてください。</p>
         </div>
     </div>
 

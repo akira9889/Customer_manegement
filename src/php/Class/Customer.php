@@ -8,7 +8,7 @@ class Customer {
         $this->customer_id = $customer_id;
     }
 
-    public function fetchCustomerData(): array
+    public function fetchCustomerData(): ?array
     {
         $sql = "SELECT *
                 FROM `customers`
@@ -18,7 +18,7 @@ class Customer {
 
         $mysql = new ExecuteMySql($sql, $options);
 
-        return $mysql->execute()[0];
+        return $mysql->execute()[0] ?? null;
     }
 
     public static function fetchAge(string $birthday): int

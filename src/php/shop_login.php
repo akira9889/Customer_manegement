@@ -28,7 +28,7 @@ if (!empty($mysql->execute()[0])) {
 }
 
 if ((isset($_SESSION['USER']['shop_id']) && $_SESSION['USER']['shop_id'] === $shop_id) || (isset($_SESSION['USER']['admin_state']) && $_SESSION['USER']['admin_state'] === RegisterCompany::OWNER && isset($shop['company_id']) && $shop['company_id'] === $_SESSION['USER']['id'])) {
-    redirect('/customer_list.php?shop_id=' . $shop_id);
+    redirect('/customer_list/?shop_id=' . $shop_id);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <header class="header">
         <div class="header-inner">
             <div class="header-content">
-                <h1 class="header-logo"><?= $shop['name'] ?? null ?></h1>
+                <h1 class="header-logo">Managee</h1>
             </div>
         </div>
     </header>
