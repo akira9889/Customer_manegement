@@ -3,9 +3,6 @@ require_once(__DIR__ . '/Class/RegisterUser.php');
 require_once(__DIR__ . '/Class/RegisterCompany.php');
 require_once(__DIR__ . '/functions.php');
 
-
-session_start();
-
 $shop_id = filter_input(INPUT_GET, 'shop_id', FILTER_VALIDATE_INT);
 
 $sql = "SELECT s.`company_id`, c.`name`, s.`area`
@@ -51,99 +48,71 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $admin_state = $_SESSION['USER']['admin_state'] ?? null;
 ?>
-<!doctype html>
-<html lang="ja">
+<?php
+$title = 'スタッフ登録';
+include("./templates/header.php");
+?>
 
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
-
-  <!-- Original CSS -->
-  <link href="/css/style.css" rel="stylesheet" type="text/css">
-
-  <title>管理者登録</title>
-</head>
-
-<body class="register_user">
-  <header class="header">
-    <div class="header-inner">
-      <div class="header-content">
-        <h1 class="header-logo"><?= $shop['name'] . '  ' . $shop['area'] ?></h1>
-        <nav id="header-nav" class="header-nav">
-          <ul id="header-list" class="header-list">
-            <li class="header-item">
-              <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
-            </li>
-        </nav>
-      </div>
-    </div>
-  </header>
-
-  <div class="content">
-    <div class="sidebar">
-      <ul class="sidebar-list">
-        <li class="sidebar-item">
-          <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+<div class="content">
+  <div class="sidebar">
+    <ul class="sidebar-list">
+      <li class="sidebar-item">
+        <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+      </li>
+      <li class="sidebar-item">
+        <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
+      </li>
+      <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
+        <li class="sidebar-item has-sub-menu">
+          <p class="sidebar-link">設定</p>
+          <ul class="sub-menu">
+            <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+            <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+          </ul>
         </li>
-        <li class="sidebar-item">
-          <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
-        </li>
-        <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
-          <li class="sidebar-item has-sub-menu">
-            <p class="sidebar-link">設定</p>
-            <ul class="sub-menu">
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
-            </ul>
-          </li>
-        <?php endif; ?>
-      </ul>
-    </div>
+      <?php endif; ?>
+    </ul>
+  </div>
 
-    <div class="main-content">
-      <div class="main-inner">
-        <h2 class="main-title">ユーザー登録</h2>
+  <div class="main-content">
+    <div class="main-inner">
+      <h2 class="main-title">ユーザー登録</h2>
 
-        <form class="register-form" method="post">
-          <ul class="register-list">
-            <li class="register-item">
-              <label for="last_name">ユーザ名</label>
-              <div class="register-input">
-                <input type="text" name="name" placeholder="ユーザ名" value="<?= $new_user_data['name'] ?? null ?>">
-              </div>
-              <p class="invalid"><?= $errors['user_name'] ?? null ?></p>
-            </li>
-            <li class="register-item">
-              <label for="last_name">パスワード</label>
-              <div class="register-input">
-                <input type="text" name="password" placeholder="パスワード">
-              </div>
-              <p class="invalid"><?= $errors['password'] ?? null ?></p>
-            </li>
-            <li class=" register-item">
-              <label for="last_name">パスワード確認</label>
-              <div class="register-input">
-                <input type="text" name="confirm_password" placeholder="パスワード確認">
-              </div>
-              <p class="invalid"><?= $errors['confirm_password'] ?? null ?></p>
-            </li>
-            <li class=" register-item register-item__admin">
-              <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state" <?php if (isset($new_user_data['admin_state'])) echo 'checked' ?>><span></span></label>
-              <p>(ユーザーの追加や削除、編集することができます。)</p>
-            </li>
-            <div class="register-btn">
-              <button type="submit">登録</button>
+      <form class="register-form" method="post">
+        <ul class="register-list">
+          <li class="register-item">
+            <label for="last_name">ユーザ名</label>
+            <div class="register-input">
+              <input type="text" name="name" placeholder="ユーザ名" value="<?= $new_user_data['name'] ?? null ?>">
             </div>
-        </form>
-      </div>
+            <p class="invalid"><?= $errors['user_name'] ?? null ?></p>
+          </li>
+          <li class="register-item">
+            <label for="last_name">パスワード</label>
+            <div class="register-input">
+              <input type="text" name="password" placeholder="パスワード">
+            </div>
+            <p class="invalid"><?= $errors['password'] ?? null ?></p>
+          </li>
+          <li class=" register-item">
+            <label for="last_name">パスワード確認</label>
+            <div class="register-input">
+              <input type="text" name="confirm_password" placeholder="パスワード確認">
+            </div>
+            <p class="invalid"><?= $errors['confirm_password'] ?? null ?></p>
+          </li>
+          <li class=" register-item register-item__admin">
+            <label for="admin">管理者機能<input id="admin" type="checkbox" name="admin_state" <?php if (isset($new_user_data['admin_state'])) echo 'checked' ?>><span></span></label>
+            <p>(ユーザーの追加や削除、編集することができます。)</p>
+          </li>
+          <div class="register-btn">
+            <button type="submit">登録</button>
+          </div>
+      </form>
     </div>
   </div>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="/js/script.js"></script>
+</div>
+<?php include('./templates/load_js.php') ?>
 </body>
 
 </html>

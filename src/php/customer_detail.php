@@ -6,8 +6,6 @@ require_once(__DIR__ . '/Class/Customer.php');
 require_once(__DIR__ . '/Class/VisitHistory.php');
 require_once(__DIR__ . '/functions.php');
 
-session_start();
-
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
 $customer = new Customer($id);
@@ -93,144 +91,115 @@ $admin_state = $_SESSION['USER']['admin_state'] ?? null;
 $visit_history_data = $customer->fetchCustomerHistoriesData();
 
 ?>
-<!doctype html>
-<html lang="ja">
+<<?php
+  $title = '顧客情報';
+  include("./templates/header.php");
+  ?> <div class="content">
+  <div class="sidebar">
+    <ul class="sidebar-list">
+      <li class="sidebar-item">
+        <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+      </li>
+      <li class="sidebar-item">
+        <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
+      </li>
+      <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
+        <li class="sidebar-item has-sub-menu">
+          <p class="sidebar-link">設定</p>
 
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- fontawesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
-
-  <!-- Original CSS -->
-  <link href="/css/style.css" rel="stylesheet" type="text/css">
-
-  <title>顧客情報一覧</title>
-</head>
-
-<body class="customer_detail">
-  <header class="header">
-    <div class="header-inner">
-      <div class="header-content">
-        <h1 class="header-logo"><?= $shop['name'] . '  ' . $shop['area'] ?></h1>
-        <nav id="header-nav" class="header-nav">
-          <ul id="header-list" class="header-list">
-            <li class="header-item">
-              <a class="header-item-link" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i></a>
-            </li>
-        </nav>
-      </div>
-    </div>
-  </header>
-
-  <div class="content">
-    <div class="sidebar">
-      <ul class="sidebar-list">
-        <li class="sidebar-item">
-          <a href="/customer_list/?shop_id=<?= $shop_id ?>" class="sidebar-link">顧客情報一覧</a>
+          <ul class="sub-menu">
+            <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
+            <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
+          </ul>
         </li>
-        <li class="sidebar-item">
-          <a href="/visit_history/?shop_id=<?= $shop_id ?>" class="sidebar-link">来店履歴一覧</a>
-        </li>
-        <?php if ($admin_state === RegisterCompany::OWNER || $admin_state === RegisterUser::STORE_MANEGER) : ?>
-          <li class="sidebar-item has-sub-menu">
-            <p class="sidebar-link">設定</p>
+      <?php endif; ?>
+    </ul>
+  </div>
 
-            <ul class="sub-menu">
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/register_user/?shop_id=<?= $shop_id ?>">スタッフ登録</a></li>
-              <li class="sub-item sidebar-item"><a class="sidebar-link" href="/user_list/?shop_id=<?= $shop_id ?>">スタッフ一覧</a></li>
-            </ul>
-          </li>
-        <?php endif; ?>
-      </ul>
+  <div class="main-content">
+    <div class="adding-btn">
+      <button class="modal-open" type="button">来店履歴追加<span>＋</span></button>
     </div>
+    <div class="main-inner customer-form">
+      <h2 class="main-title">お客様情報</h2>
 
-    <div class="main-content">
-      <div class="adding-btn">
-        <button class="modal-open" type="button">来店履歴追加<span>＋</span></button>
-      </div>
-      <div class="main-inner customer-form">
-        <h2 class="main-title">お客様情報</h2>
-
-        <div class="customer-main-detail">
-          <div class="customer-name">
-            <div class="customer-last_name">
-              <ruby>
-                <rt class="input" data-name="last_kana" data-type="text"><?= $customer_data['last_kana'] ?></rt>
-                <rb class="input" data-name="last_name" data-type="text"><?= $customer_data['last_name'] ?></rb>
-              </ruby>
-            </div>
-            <div class=" customer-first_name">
-              <ruby>
-                <rt class="input" data-name="first_kana" data-type="text"><?= $customer_data['first_kana'] ?></rt>
-                <rb class="input" data-name="first_name" data-type="text"><?= $customer_data['first_name'] ?></rb>
-              </ruby>
-            </div>
+      <div class="customer-main-detail">
+        <div class="customer-name">
+          <div class="customer-last_name">
+            <ruby>
+              <rt class="input" data-name="last_kana" data-type="text"><?= $customer_data['last_kana'] ?></rt>
+              <rb class="input" data-name="last_name" data-type="text"><?= $customer_data['last_name'] ?></rb>
+            </ruby>
           </div>
-          <div class="gender"><span><?= $customer_data['gender'] ?></span><span><?php echo Customer::fetchAge($customer_data['birthday']); ?>歳</span></div>
+          <div class=" customer-first_name">
+            <ruby>
+              <rt class="input" data-name="first_kana" data-type="text"><?= $customer_data['first_kana'] ?></rt>
+              <rb class="input" data-name="first_name" data-type="text"><?= $customer_data['first_name'] ?></rb>
+            </ruby>
+          </div>
         </div>
-
-        <div class="customer-sub-detail">
-          <dl>
-            <dt>生年月日</dt>
-            <p class="invalid"></p>
-            <dd id="birthday" class="input"><?php echo date('Y年m月d日', strtotime($customer_data['birthday'])) ?></dd>
-          </dl>
-        </div>
-        <div class="customer-sub-detail">
-          <dl>
-            <dt>メールアドレス</dt>
-            <p class="invalid"></p>
-            <dd class="input" data-name="email" data-type="email"><?= $customer_data['email'] ?></dd>
-          </dl>
-        </div>
-        <div class="customer-sub-detail">
-          <dl>
-            <dt>電話番号</dt>
-            <p class="invalid"></p>
-            <dd class="input" data-name="tel" data-type="tel"><?= $customer_data['tel'] ?></dd>
-          </dl>
-        </div>
-        <div class="customer-sub-detail">
-          <dl>
-            <dt>メモ</dt>
-            <dd class="input" data-name="information" data-type="textarea"><?= h($customer_data['information']) ?></dd>
-          </dl>
-        </div>
-
-        <div class="edit-btn">
-          <input name="customer_information" type="button" value="編集">
-        </div>
-        <input name="customer_id" type="hidden" value="<?= $id ?>">
-        <input name="shop_id" type="hidden" value="<?= $shop_id ?>">
+        <div class="gender"><span><?= $customer_data['gender'] ?></span><span><?php echo Customer::fetchAge($customer_data['birthday']); ?>歳</span></div>
       </div>
 
-      <div class="table-wrap">
-        <p>（最新10件）</p>
-        <table class="customer-table customer-detail-table">
-          <thead>
-            <tr>
-              <th>来店日</th>
-              <th>総額</th>
-              <th>当日メモ</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($visit_history_data as $data) : ?>
-              <tr>
-                <th><?= $data['date'] ?></th>
-                <td><?= number_format($data['price']) ?>円</td>
-                <td class="memo"><?= $data['memo'] ?></td>
-                <td><button type="button" class="modal-open" data-date="<?= $data['date'] ?>"><i class="fa-solid fa-pencil"></i></button></td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
+      <div class="customer-sub-detail">
+        <dl>
+          <dt>生年月日</dt>
+          <p class="invalid"></p>
+          <dd id="birthday" class="input"><?php echo date('Y年m月d日', strtotime($customer_data['birthday'])) ?></dd>
+        </dl>
       </div>
+      <div class="customer-sub-detail">
+        <dl>
+          <dt>メールアドレス</dt>
+          <p class="invalid"></p>
+          <dd class="input" data-name="email" data-type="email"><?= $customer_data['email'] ?></dd>
+        </dl>
+      </div>
+      <div class="customer-sub-detail">
+        <dl>
+          <dt>電話番号</dt>
+          <p class="invalid"></p>
+          <dd class="input" data-name="tel" data-type="tel"><?= $customer_data['tel'] ?></dd>
+        </dl>
+      </div>
+      <div class="customer-sub-detail">
+        <dl>
+          <dt>メモ</dt>
+          <dd class="input" data-name="information" data-type="textarea"><?= h($customer_data['information']) ?></dd>
+        </dl>
+      </div>
+
+      <div class="edit-btn">
+        <input name="customer_information" type="button" value="編集">
+      </div>
+      <input name="customer_id" type="hidden" value="<?= $id ?>">
+      <input name="shop_id" type="hidden" value="<?= $shop_id ?>">
     </div>
+
+    <div class="table-wrap">
+      <p>（最新10件）</p>
+      <table class="customer-table customer-detail-table">
+        <thead>
+          <tr>
+            <th>来店日</th>
+            <th>総額</th>
+            <th>当日メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($visit_history_data as $data) : ?>
+            <tr>
+              <th><?= $data['date'] ?></th>
+              <td><?= number_format($data['price']) ?>円</td>
+              <td class="memo"><?= $data['memo'] ?></td>
+              <td><button type="button" class="modal-open" data-date="<?= $data['date'] ?>"><i class="fa-solid fa-pencil"></i></button></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
   </div>
 
   <div class="modal-container">
@@ -270,8 +239,7 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
     </div>
   </div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="/js/script.js"></script>
+  <?php include('./templates/load_js.php'); ?>
   <script>
     <?php if ($modal_view_flug) : ?>
       const container = $('.modal-container');
@@ -362,6 +330,6 @@ $visit_history_data = $customer->fetchCustomerHistoriesData();
       $('textarea[name="memo"]').val(memo)
     })
   </script>
-</body>
+  </body>
 
-</html>
+  </html>
