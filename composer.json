@@ -1,4 +1,9 @@
 {
+  "autoload": {
+    "psr-4": {
+      "": "public/"
+    }
+  },
   "require": {
     "vlucas/phpdotenv": "^5.5"
   },

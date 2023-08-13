@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(__FILE__) . '/mapping.php');
 require_once('functions.php');
+require '../vendor/autoload.php';
+
 try {
     session_start();
     // 開発(3000ポート)
