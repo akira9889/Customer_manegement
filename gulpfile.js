@@ -7,6 +7,7 @@ const $ = loadPlugins();
 const mozjpeg = require('imagemin-mozjpeg');
 const pngquant = require('imagemin-pngquant');
 const sass = require('gulp-sass')(require('sass'));
+const eslint = require('gulp-eslint-new');
 const autoprefixer = require('autoprefixer');
 const cssdeclsort = require('css-declaration-sorter');
 const del = require('del');
@@ -67,13 +68,13 @@ function jsClean() {
   return del(['./public/assets/js']);
 }
 
-// function lint() {
-//   return src('./js/*.js')
-//     .pipe($.eslintNew({ fix: true }))
-//     .pipe($.eslintNew.format())
-//     .pipe($.eslintNew.failAfterError())
-//     .pipe(dest('./public/jf')
-// }
+function lint() {
+  return src('./js/*.js')
+    .pipe(eslint({ fix: true }))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    .pipe(dest('./public/assets/js'))
+}
 
 function imageMin() {
   return src('./img' + '/**/*.{png,jpg,gif,jpeg}')
@@ -91,7 +92,7 @@ function imageMin() {
       $.imagemin.optipng(),
       $.imagemin.gifsicle()
     ]))
-    .pipe(dest('./public/img')) // imgファイルに保存(出力)
+    .pipe(dest('./public/assets/img')) // imgファイルに保存(出力)
 }
 
 function startAppServer() {
@@ -131,19 +132,19 @@ function startAppServer() {
   ]).on('change', server.reload);
 }
 
-// const build = series(parallel(extras, php, styles, series(lint, scripts)));
-const build = series(phpClean, php, styles, scripts);
+const build = series(parallel(extras, php, styles, series(lint, scripts)));
+// const build = series(phpClean, php, styles, scripts, imageMin);
 const serve = series(build, startAppServer);
 
 exports.extras = extras;
 exports.php = php;
 exports.styles = styles;
 exports.scripts = scripts;
-// exports.lint = lint;
+exports.lint = lint;
 exports.clean = clean;
 exports.htmlClean = htmlClean;
 exports.phpClean = phpClean;
-exports.csslean = cssClean;
+exports.cssClean = cssClean;
 exports.jsClean = jsClean;
 exports.imageMin = imageMin;
 exports.serve = serve;
