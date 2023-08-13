@@ -1,8 +1,30 @@
 <?php
 $hidden_logout_path = [
+    '/',
     '/login/',
     '/shop_login/'
 ];
+if (isset($_SESSION['USER'])) {
+    $company_id = filter_input(INPUT_GET, 'company_id', FILTER_VALIDATE_INT);
+
+    $sql = "SELECT `name` FROM `companies` WHERE `id` = :company_id";
+
+    $options = [
+        'company_id' => $company_id,
+    ];
+
+    $mysql = new ExecuteMySql($sql, $options) ?? null;
+    $result = $mysql->execute() ? $mysql->execute()[0]: null;
+    $header_logo = $result ? $result['name'] : '';
+}
+
+if (isset($shop) && isset($shop['area'])) {
+    $header_logo = $shop['name'] . ' ' . $shop['area'] . '店';
+}
+
+if (in_array($request_path, $hidden_logout_path)) {
+    $header_logo = 'Managee';
+}
 ?>
 <!doctype html>
 <html lang="ja">
@@ -27,7 +49,7 @@ $hidden_logout_path = [
     <header class="header">
         <div class="header-inner">
             <div class="header-content">
-                <h1 class="header-logo">Sample shop</h1>
+                <h1 class="header-logo"><? if($header_logo) echo $header_logo; ?></h1>
                 <nav id="header-nav" class="header-nav">
                     <ul id="header-list" class="header-list">
                         <?php if (!in_array($request_path, $hidden_logout_path)) : ?>
