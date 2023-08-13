@@ -42,7 +42,7 @@ $(() => {
     var birthdayMonth = $('#birthday').text().split('年')[1].split('月')[0]
     var birthdayDate = $('#birthday').text().split('年')[1].split('月')[1].split('日')[0]
 
-    $('.input').map(function () {
+    $('.input').each(function () {
       var value = $(this).text();
       var name = $(this).data('name');
       var type = $(this).data('type');
@@ -71,6 +71,7 @@ $(() => {
       setFormInput();
       return false;
     }
+    return true;
   })
 
 });
