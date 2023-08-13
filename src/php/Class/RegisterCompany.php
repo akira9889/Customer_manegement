@@ -7,6 +7,8 @@ require_once __DIR__ . '/Validation.php';
 
 final class RegisterCompany
 {
+    use Traits\EncryptTrait;
+
     public const OWNER = 1;
 
     private string $name;
@@ -37,7 +39,7 @@ final class RegisterCompany
 
             $options = [
                 'name' => $this->name,
-                'password' => $this->password,
+                'password' => $this->encrypt($this->password),
             ];
 
             $mysql = new ExecuteMySql($sql, $options);

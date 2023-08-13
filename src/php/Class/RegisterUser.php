@@ -3,6 +3,8 @@ require_once __DIR__ . '/../lib/ExecuteMySql.php';
 
 class RegisterUser
 {
+    use Traits\EncryptTrait;
+
     public const STORE_MANEGER = 2;
 
     private readonly string $name;
@@ -41,7 +43,7 @@ class RegisterUser
             $options = [
                 'shop_id' => $this->shop_id,
                 'name' => $this->name,
-                'password' => $this->password,
+                'password' => $this->encrypt($this->password),
                 'admin_state' => $this->admin_state
             ];
 
@@ -49,9 +51,8 @@ class RegisterUser
 
             $mysql->execute();
 
-            redirect('/customer_list/?shop_id=' . $this->shop_id);
+            redirect('/user_list/?shop_id=' . $this->shop_id);
             exit;
-
         }
     }
 
