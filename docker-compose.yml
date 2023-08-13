@@ -31,10 +31,14 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     depends_on:
-      - db
+    - db
+    links:
+        - db
     environment:
       - PMA_ARBITRARY=1
-      - PMA_HOSTS='db'
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=pass
     ports:
       - "4000:80"
     volumes:
