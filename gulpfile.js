@@ -46,12 +46,12 @@ function styles() {
       cssdeclsort({ order: 'alphabetical' })
     ]))
     .pipe($.sourcemaps.write('.'))
-    .pipe(dest('./public/css'));
+    .pipe(dest('./public/assets/css'));
 }
 
 
 function cssClean() {
-  return del(['./public/css']);
+  return del(['./public/assets/css']);
 }
 
 function scripts() {
@@ -59,12 +59,12 @@ function scripts() {
     .pipe($.sourcemaps.init())
     .pipe($.babel())
     .pipe($.sourcemaps.write('.'))
-    .pipe(dest('./public/js'));
+    .pipe(dest('./public/assets/js'));
 }
 
 
 function jsClean() {
-  return del(['./public/js']);
+  return del(['./public/assets/js']);
 }
 
 // function lint() {
